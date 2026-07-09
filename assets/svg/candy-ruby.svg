@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="rb-body" cx="0.34" cy="0.26" r="0.95">
+      <stop offset="0" stop-color="#ff8ba3"/>
+      <stop offset="0.35" stop-color="#ff4d70"/>
+      <stop offset="0.65" stop-color="#ff2d55"/>
+      <stop offset="0.88" stop-color="#b3123a"/>
+      <stop offset="1" stop-color="#8c0c2c"/>
+    </radialGradient>
+    <linearGradient id="rb-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <linearGradient id="rb-spec" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="rb-clip">
+      <circle cx="64" cy="64" r="53"/>
+    </clipPath>
+    <filter id="rb-blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+  <!-- round brilliant cut: circular gem, octagonal table, crown facets radiating to the girdle -->
+  <circle cx="64" cy="64" r="53" fill="url(#rb-body)"/>
+  <g clip-path="url(#rb-clip)">
+    <ellipse cx="82" cy="96" rx="46" ry="32" fill="#7a0a2a" opacity="0.5" filter="url(#rb-blur)"/>
+    <ellipse cx="42" cy="30" rx="34" ry="24" fill="#ffb1c1" opacity="0.45" filter="url(#rb-blur)"/>
+    <circle cx="64" cy="64" r="47" fill="none" stroke="#ffc4d0" stroke-width="5" opacity="0.45" filter="url(#rb-blur)"/>
+    <!-- crown facets: star triangles between the table and the girdle -->
+    <g stroke="#8c0c2c" stroke-opacity="0.35" stroke-width="1.6">
+      <path d="M82.5 71.7 L113 84.3 M71.7 82.5 L84.3 113 M56.3 82.5 L43.7 113 M45.5 71.7 L15 84.3 M45.5 56.3 L15 43.7 M56.3 45.5 L43.7 15 M71.7 45.5 L84.3 15 M82.5 56.3 L113 43.7"/>
+    </g>
+    <g stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.4">
+      <path d="M82.5 64 L117 64 M77.1 77.1 L101.5 101.5 M64 82.5 L64 117 M50.9 77.1 L26.5 101.5 M45.5 64 L11 64 M50.9 50.9 L26.5 26.5 M64 45.5 L64 11 M77.1 50.9 L101.5 26.5"/>
+    </g>
+    <!-- octagonal table -->
+    <path d="M82.5 71.7 L71.7 82.5 L56.3 82.5 L45.5 71.7 L45.5 56.3 L56.3 45.5 L71.7 45.5 L82.5 56.3 Z" fill="#ffffff" opacity="0.1" stroke="#ffffff" stroke-opacity="0.32" stroke-width="1.6"/>
+    <!-- lit and shaded facets -->
+    <path d="M56.3 45.5 L43.7 15 L64 11 L64 45.5 Z" fill="#ffffff" opacity="0.13"/>
+    <path d="M45.5 56.3 L15 43.7 L11 64 L45.5 64 Z" fill="#ffffff" opacity="0.08"/>
+    <path d="M71.7 82.5 L84.3 113 L64 117 L64 82.5 Z" fill="#5c0720" opacity="0.18"/>
+    <ellipse cx="44" cy="36" rx="15" ry="9" transform="rotate(-28 44 36)" fill="url(#rb-spec)"/>
+    <circle cx="56" cy="26" r="3.4" fill="#ffffff" opacity="0.92"/>
+  </g>
+  <circle cx="64" cy="64" r="53" fill="none" stroke="url(#rb-rim)" stroke-width="3"/>
+</svg>

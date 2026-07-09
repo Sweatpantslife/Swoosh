@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="em-body" cx="42" cy="34" r="102" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7dffc4"/>
+      <stop offset="0.38" stop-color="#22e893"/>
+      <stop offset="0.66" stop-color="#00d97a"/>
+      <stop offset="0.88" stop-color="#00a05a"/>
+      <stop offset="1" stop-color="#007a42"/>
+    </radialGradient>
+    <linearGradient id="em-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <linearGradient id="em-spec" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="em-clip">
+      <path d="M42 14 L86 14 L106 34 L106 94 L86 114 L42 114 L22 94 L22 34 Z"/>
+    </clipPath>
+    <filter id="em-blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+  <!-- emerald cut: octagon with stepped concentric rectangular facets -->
+  <path d="M42 14 L86 14 L106 34 L106 94 L86 114 L42 114 L22 94 L22 34 Z" fill="url(#em-body)"/>
+  <g clip-path="url(#em-clip)">
+    <ellipse cx="86" cy="98" rx="44" ry="34" fill="#014d2b" opacity="0.5" filter="url(#em-blur)"/>
+    <ellipse cx="44" cy="30" rx="32" ry="26" fill="#a8ffd8" opacity="0.5" filter="url(#em-blur)"/>
+    <path d="M42 14 L86 14 L106 34 L106 94 L86 114 L42 114 L22 94 L22 34 Z" fill="none" stroke="#a8ffd8" stroke-width="5" opacity="0.4" filter="url(#em-blur)" transform="translate(64 64) scale(0.92) translate(-64 -64)"/>
+    <!-- corner cut lines running through the steps -->
+    <g stroke="#015c33" stroke-opacity="0.35" stroke-width="1.6">
+      <path d="M42 14 L52 36 M86 14 L76 36 M106 34 L86 44 M106 94 L86 84 M86 114 L76 92 M42 114 L52 92 M22 94 L42 84 M22 34 L42 44"/>
+    </g>
+    <!-- stepped concentric facets -->
+    <g fill="none" stroke="#ffffff" stroke-width="1.6">
+      <path d="M46 23 L82 23 L97 38 L97 90 L82 105 L46 105 L31 90 L31 38 Z" stroke-opacity="0.24"/>
+      <path d="M49 31 L79 31 L89 41 L89 87 L79 97 L49 97 L39 87 L39 41 Z" stroke-opacity="0.28"/>
+    </g>
+    <!-- bright rectangular table -->
+    <rect x="47" y="40" width="34" height="48" rx="3" fill="#a8ffd8" opacity="0.18" stroke="#ffffff" stroke-opacity="0.34" stroke-width="1.6"/>
+    <!-- lit and shaded step bands -->
+    <path d="M46 23 L82 23 L79 31 L49 31 Z" fill="#ffffff" opacity="0.14"/>
+    <path d="M97 90 L82 105 L79 97 L89 87 Z" fill="#013d22" opacity="0.22"/>
+    <ellipse cx="48" cy="30" rx="14" ry="8" transform="rotate(-24 48 30)" fill="url(#em-spec)"/>
+    <circle cx="60" cy="22" r="3" fill="#ffffff" opacity="0.92"/>
+  </g>
+  <path d="M42 14 L86 14 L106 34 L106 94 L86 114 L42 114 L22 94 L22 34 Z" fill="none" stroke="url(#em-rim)" stroke-width="3" stroke-linejoin="round"/>
+</svg>

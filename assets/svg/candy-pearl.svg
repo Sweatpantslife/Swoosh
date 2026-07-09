@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="pl-body" cx="0.36" cy="0.3" r="0.95">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.45" stop-color="#f4f6ff"/>
+      <stop offset="0.78" stop-color="#dde3f4"/>
+      <stop offset="1" stop-color="#c0c9e0"/>
+    </radialGradient>
+    <linearGradient id="pl-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <radialGradient id="pl-spec" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.98"/>
+      <stop offset="0.7" stop-color="#ffffff" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="pl-clip">
+      <circle cx="64" cy="64" r="52"/>
+    </clipPath>
+    <filter id="pl-blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+  </defs>
+  <!-- smooth pearl orb: no facets — soft iridescent sheen bands + one strong specular dot -->
+  <circle cx="64" cy="64" r="52" fill="url(#pl-body)"/>
+  <g clip-path="url(#pl-clip)">
+    <ellipse cx="82" cy="94" rx="46" ry="34" fill="#8c98b8" opacity="0.42" filter="url(#pl-blur)"/>
+    <!-- iridescent tint bands: pink over the upper right, blue along the lower left, a whisper of mint -->
+    <ellipse cx="88" cy="46" rx="30" ry="18" transform="rotate(32 88 46)" fill="#ffd6e8" opacity="0.5" filter="url(#pl-blur)"/>
+    <ellipse cx="40" cy="86" rx="32" ry="17" transform="rotate(28 40 86)" fill="#cfe0ff" opacity="0.55" filter="url(#pl-blur)"/>
+    <ellipse cx="86" cy="80" rx="22" ry="12" transform="rotate(-24 86 80)" fill="#d8fff0" opacity="0.3" filter="url(#pl-blur)"/>
+    <!-- soft reflected light hugging the bottom rim -->
+    <path d="M22 84 A46 46 0 0 0 106 84" fill="none" stroke="#ffffff" stroke-width="7" opacity="0.5" filter="url(#pl-blur)"/>
+    <!-- broad sheen + crisp specular dot -->
+    <ellipse cx="47" cy="42" rx="22" ry="15" transform="rotate(-28 47 42)" fill="url(#pl-spec)" opacity="0.85"/>
+    <circle cx="49" cy="41" r="6" fill="#ffffff"/>
+    <circle cx="60" cy="33" r="2.6" fill="#ffffff" opacity="0.9"/>
+  </g>
+  <circle cx="64" cy="64" r="52" fill="none" stroke="url(#pl-rim)" stroke-width="2.6"/>
+</svg>

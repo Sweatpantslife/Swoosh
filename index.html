@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#12081f">
+  <title>Swoosh</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%8E%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Fonts load async so a stalled CDN can't block first paint; fallback stacks in styles.css hold until swap. -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Nunito:wght@500;700;800;900&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Ambient jewel-box backdrop: gradient stack + drifting gold bokeh + vignette -->
+  <div class="bg" aria-hidden="true">
+    <div class="bokeh bokeh-a"></div>
+    <div class="bokeh bokeh-b"></div>
+    <div class="vignette"></div>
+  </div>
+
+  <div id="app">
+
+    <!-- ============ LEVEL MAP ============ -->
+    <section id="screen-map" class="screen">
+      <header class="map-header">
+        <h1 class="title" aria-label="Swoosh"><span class="title-text">SWOOSH</span></h1>
+        <p class="tagline">High-stakes gem cascades</p>
+      </header>
+      <div id="map-scroll" class="map-scroll">
+        <div id="map-path" class="map-path">
+          <!-- level nodes + winding path injected by js/ui.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GAME ============ -->
+    <section id="screen-game" class="screen" hidden>
+      <div id="hud">
+        <div class="hud-top">
+          <button id="btn-pause" class="btn btn-icon" type="button" aria-label="Pause">
+            <span class="pause-glyph" aria-hidden="true"></span>
+          </button>
+          <div class="hud-card hud-level">
+            <span class="hud-label">Level</span>
+            <span id="hud-level-name" class="hud-level-name">—</span>
+          </div>
+          <div class="hud-card hud-moves">
+            <span class="hud-label">Moves</span>
+            <span id="hud-moves" class="hud-big">0</span>
+          </div>
+        </div>
+        <div class="hud-bottom">
+          <div class="hud-card hud-score">
+            <span class="hud-label">Score</span>
+            <span id="hud-score" class="hud-big">0</span>
+            <span id="hud-stars" class="hud-stars" aria-label="stars earned">
+              <i class="mini-star" data-i="0"></i><i class="mini-star" data-i="1"></i><i class="mini-star" data-i="2"></i>
+            </span>
+          </div>
+          <div id="hud-goals" class="hud-card hud-goals" aria-label="level goals"></div>
+        </div>
+      </div>
+
+      <div id="board-wrap">
+        <canvas id="canvas-board"></canvas>
+        <canvas id="canvas-fx"></canvas>
+        <div id="banner" class="banner" aria-live="polite"></div>
+      </div>
+
+      <div class="game-footer" aria-hidden="true"></div>
+    </section>
+
+    <!-- ============ MODALS ============ -->
+    <div id="modal-win" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="win-title">
+      <div class="modal-card">
+        <div class="modal-ribbon"><h2 id="win-title" class="modal-title">Level Clear!</h2></div>
+        <div class="star-row" aria-hidden="true">
+          <div class="star-socket" data-i="0"><span class="star">&#9733;</span></div>
+          <div class="star-socket star-socket-mid" data-i="1"><span class="star">&#9733;</span></div>
+          <div class="star-socket" data-i="2"><span class="star">&#9733;</span></div>
+        </div>
+        <p class="modal-score"><span class="hud-label">Score</span><b id="win-score">0</b></p>
+        <div class="modal-actions">
+          <button id="btn-win-next" class="btn btn-primary" type="button">Next Level</button>
+          <div class="modal-actions-row">
+            <button id="btn-win-retry" class="btn btn-ghost" type="button">Replay</button>
+            <button id="btn-win-map" class="btn btn-ghost" type="button">Map</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-fail" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="fail-title">
+      <div class="modal-card modal-card-fail">
+        <div class="modal-ribbon modal-ribbon-fail"><h2 id="fail-title" class="modal-title">Out of Moves</h2></div>
+        <p id="fail-text" class="modal-sub">The house wins this hand&hellip; take another spin?</p>
+        <div class="modal-actions">
+          <button id="btn-fail-retry" class="btn btn-primary" type="button">Try Again</button>
+          <button id="btn-fail-map" class="btn btn-ghost" type="button">Back to Map</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-pause" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="pause-title">
+      <div class="modal-card">
+        <div class="modal-ribbon"><h2 id="pause-title" class="modal-title">Paused</h2></div>
+        <div class="settings-rows">
+          <div class="settings-row">
+            <span class="settings-label">Music</span>
+            <button id="toggle-music" class="toggle" type="button" role="switch" aria-checked="true" aria-label="Music">
+              <span class="toggle-knob"></span>
+            </button>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">Sound FX</span>
+            <button id="toggle-sfx" class="toggle" type="button" role="switch" aria-checked="true" aria-label="Sound effects">
+              <span class="toggle-knob"></span>
+            </button>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-pause-resume" class="btn btn-primary" type="button">Resume</button>
+          <div class="modal-actions-row">
+            <button id="btn-pause-retry" class="btn btn-ghost" type="button">Restart</button>
+            <button id="btn-pause-quit" class="btn btn-ghost" type="button">Quit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
