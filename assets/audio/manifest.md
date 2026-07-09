@@ -2,7 +2,7 @@
 
 Original music + SFX for **Swoosh**, a mobile-first match-3 jewel puzzle game
 with a premium, sparkling gem-shimmer aesthetic — crystalline chimes, lush
-shimmer, warm glassy textures and modern elegant electronic; every sound is
+shimmer, warm glassy textures and modern, elegant electronic music; every sound is
 designed to feel like a small reward. All files generated with Higgsfield
 (`sonilo_music` for the BGM, `mirelo_text_to_audio` for SFX), then trimmed /
 normalized / encoded with ffmpeg.
@@ -18,7 +18,7 @@ normalized / encoded with ffmpeg.
 
 | File | Purpose | Duration | Size | Play mode | Suggested vol (0-1) |
 |------|---------|---------:|-----:|-----------|--------------------:|
-| `bgm-main-loop.mp3` | Background music — uplifting modern electronic with sparkling crystalline arpeggios, warm shimmer pads and glassy bell melodies; beautiful but non-fatiguing over long sessions | 76.07 s | 1.45 MB | **loop** | 0.55 |
+| `bgm-main-loop.mp3` | Background music — uplifting modern electronic music with sparkling crystalline arpeggios, warm shimmer pads and glassy bell melodies; beautiful but non-fatiguing over long sessions | 76.07 s | 1.45 MB | **loop** | 0.55 |
 | `sfx-swap.mp3` | Tile swap — soft whoosh + glassy tick | 1.04 s | 17 KB | one-shot | 0.45 |
 | `sfx-match-3.mp3` | 3-match — bright crystalline pop/chime | 1.23 s | 20 KB | one-shot | 0.70 |
 | `sfx-match-4.mp3` | 4-match — richer sparkle, more impact than match-3 | 0.78 s | 13 KB | one-shot | 0.80 |
