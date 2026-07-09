@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <defs>
-    <radialGradient id="sp-body" cx="0.34" cy="0.26" r="0.95">
+    <radialGradient id="sp-body" cx="0.36" cy="0.3" r="0.95">
       <stop offset="0" stop-color="#9cc6ff"/>
       <stop offset="0.36" stop-color="#57a3ff"/>
       <stop offset="0.64" stop-color="#2e8bff"/>
@@ -17,20 +17,32 @@
       <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
     <clipPath id="sp-clip">
-      <path d="M64 12 L78.7 45.8 L115.4 49.3 L87.8 73.7 L95.7 109.7 L64 91 L32.3 109.7 L40.2 73.7 L12.6 49.3 L49.3 45.8 Z"/>
+      <path d="M64 6 C72 24 102 50 102 80 A38 38 0 0 1 26 80 C26 50 56 24 64 6 Z"/>
     </clipPath>
     <filter id="sp-blur" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="5"/>
     </filter>
   </defs>
-  <path d="M64 12 L78.7 45.8 L115.4 49.3 L87.8 73.7 L95.7 109.7 L64 91 L32.3 109.7 L40.2 73.7 L12.6 49.3 L49.3 45.8 Z" fill="url(#sp-body)" stroke-linejoin="round"/>
+  <!-- pear / teardrop cut: point up, round belly, facet fan from the tip -->
+  <path d="M64 6 C72 24 102 50 102 80 A38 38 0 0 1 26 80 C26 50 56 24 64 6 Z" fill="url(#sp-body)"/>
   <g clip-path="url(#sp-clip)">
-    <ellipse cx="84" cy="98" rx="46" ry="34" fill="#072a63" opacity="0.55" filter="url(#sp-blur)"/>
-    <ellipse cx="44" cy="34" rx="32" ry="26" fill="#c3dcff" opacity="0.5" filter="url(#sp-blur)"/>
-    <path d="M78.7 45.8 L87.8 73.7 L64 91 L40.2 73.7 L49.3 45.8 Z" fill="#ffffff" opacity="0.07" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.5"/>
-    <path d="M64 12 L64 66 M115.4 49.3 L64 66 M95.7 109.7 L64 66 M32.3 109.7 L64 66 M12.6 49.3 L64 66" stroke="#0b3d8f" stroke-opacity="0.3" stroke-width="1.5"/>
-    <ellipse cx="52" cy="38" rx="13" ry="7.5" transform="rotate(-30 52 38)" fill="url(#sp-spec)"/>
-    <circle cx="64" cy="24" r="3" fill="#ffffff" opacity="0.92"/>
+    <ellipse cx="82" cy="98" rx="44" ry="32" fill="#072a63" opacity="0.55" filter="url(#sp-blur)"/>
+    <ellipse cx="46" cy="36" rx="30" ry="26" fill="#c3dcff" opacity="0.5" filter="url(#sp-blur)"/>
+    <path d="M64 6 C72 24 102 50 102 80 A38 38 0 0 1 26 80 C26 50 56 24 64 6 Z" fill="none" stroke="#c3dcff" stroke-width="5" opacity="0.4" filter="url(#sp-blur)" transform="translate(64 62) scale(0.9) translate(-64 -62)"/>
+    <!-- facet fan from the tip down to the table, then out to the girdle -->
+    <g stroke="#0b3d8f" stroke-opacity="0.32" stroke-width="1.6">
+      <path d="M64 6 L47 50 M64 6 L81 50 M47 50 L28 66 M81 50 L100 66 M46 92 L28 104 M82 92 L100 104 M64 102 L64 118"/>
+    </g>
+    <g stroke="#ffffff" stroke-opacity="0.24" stroke-width="1.4">
+      <path d="M64 6 L64 46 M47 50 L44 82 M81 50 L84 82 M44 82 L64 102 M84 82 L64 102"/>
+    </g>
+    <!-- pear-shaped table -->
+    <path d="M64 46 C68 55 84 68 84 82 A20 20 0 0 1 44 82 C44 68 60 55 64 46 Z" fill="#ffffff" opacity="0.09" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.6"/>
+    <!-- lit and shaded facets -->
+    <path d="M64 6 L47 50 L64 46 Z" fill="#ffffff" opacity="0.14"/>
+    <path d="M84 82 L100 104 L64 118 L64 102 Z" fill="#062252" opacity="0.2"/>
+    <ellipse cx="52" cy="40" rx="12" ry="7.5" transform="rotate(-42 52 40)" fill="url(#sp-spec)"/>
+    <circle cx="62" cy="24" r="3" fill="#ffffff" opacity="0.92"/>
   </g>
-  <path d="M64 12 L78.7 45.8 L115.4 49.3 L87.8 73.7 L95.7 109.7 L64 91 L32.3 109.7 L40.2 73.7 L12.6 49.3 L49.3 45.8 Z" fill="none" stroke="url(#sp-rim)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M64 6 C72 24 102 50 102 80 A38 38 0 0 1 26 80 C26 50 56 24 64 6 Z" fill="none" stroke="url(#sp-rim)" stroke-width="3" stroke-linejoin="round"/>
 </svg>

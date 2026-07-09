@@ -208,7 +208,7 @@ export class AudioMan {
 
   // ---- synth fallback: ambient pad music ------------------------------------
   // Two soft chords (Cadd9 / Am7) crossfading via slow LFOs through a drifting
-  // lowpass — a barely-there casino-lounge hum. All nodes self-running.
+  // lowpass — a barely-there velvet-lounge hum. All nodes self-running.
 
   _startPad() {
     const ctx = this.ctx;

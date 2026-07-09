@@ -9,7 +9,7 @@ Vanilla JS ES modules. No build step, no runtime dependencies. Two layered `<can
 | File | Contents |
 |---|---|
 | `index.html` | Shell, screens, canvases, modals |
-| `css/styles.css` | Casino theme, UI styling, DOM animations |
+| `css/styles.css` | Jewel-box theme, UI styling, DOM animations |
 | `js/engine.js` | Pure game logic — ZERO DOM, must run under node |
 | `js/levels.js` | 24 level definitions + helpers |
 | `js/storage.js` | localStorage persistence |
@@ -24,10 +24,10 @@ Vanilla JS ES modules. No build step, no runtime dependencies. Two layered `<can
 ## Shared conventions
 - Cell coordinates are `{r, c}`, row 0 at top.
 - Color ids `0..5` map to `COLOR_NAMES = ['ruby','amber','emerald','sapphire','amethyst','pearl']`.
-- Candy silhouettes are casino-themed per color: ruby=heart, amber=diamond(suit), emerald=club, sapphire=star, amethyst=spade, pearl=poker chip.
+- Candy silhouettes are gemstone cuts per color (v1.2 — replaces the v1 casino-suit silhouettes): ruby=round brilliant, amber=marquise, emerald=emerald cut (stepped octagon), sapphire=pear/teardrop, amethyst=trillion (rounded triangle, point up), pearl=smooth faceless orb. Distinguish by shape AND brightness, never hue alone.
 - Special codes: `null | 'h' | 'v' | 'wrap' | 'bomb'`. `'h'` clears its ROW when fired; `'v'` clears its COLUMN.
 - Every candy has a unique monotonic integer `id` assigned by the engine (stable across moves — used by renderer to track tiles).
-- Shared palette (hex): ruby `#ff2d55`/dark `#b3123a`; amber `#ffb300`/`#ff8f00`; emerald `#00d97a`/`#00a05a`; sapphire `#2e8bff`/`#1259c3`; amethyst `#b44cff`/`#7a1fd0`; pearl `#f4f6ff`/`#c0c9e0`; gold accent `#ffd54a`; bg deep purple `#1a0b2e`→`#2d1050`.
+- Shared palette (hex): ruby `#ff2d55`/dark `#b3123a`; amber `#ffb300`/`#ff8f00`; emerald `#00d97a`/`#00a05a`; sapphire `#2e8bff`/`#1259c3`; amethyst `#b44cff`/`#7a1fd0` (v1.2: sprite body brightened toward `#c866ff`/`#8f2fe0` for contrast on the purple felt); pearl `#f4f6ff`/`#c0c9e0`; gold accent `#ffd54a`; bg deep purple `#1a0b2e`→`#2d1050`.
 
 ## `js/engine.js`
 Exports: `COLOR_NAMES`, `mulberry32(seed)` (returns `() => float [0,1)` PRNG), `class Board`.
@@ -182,7 +182,7 @@ Owns: SVG sprite loading (fetch `assets/svg/*.svg` → Image → rasterize to of
 ## `index.html` / `css/styles.css`
 - `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">`, safe-area-inset padding.
 - Portrait-first single column, max-width 520px centered; board canvas square-ish fitting `min(94vw, 62vh)`; on desktop everything scales up gracefully, page never scrolls in game screen.
-- Casino theme: layered background — deep purple radial gradients (`#2d1050` → `#12081f`), subtle animated gold bokeh dots (pure CSS), vignette; if `assets/img/backdrop.jpg` exists it layers under the gradients (CSS handles missing file gracefully via `background-image` stack).
+- Jewel-box theme: layered background — deep purple radial gradients (`#2d1050` → `#12081f`), subtle animated gold bokeh dots (pure CSS), vignette; if `assets/img/backdrop.jpg` exists it layers under the gradients (CSS handles missing file gracefully via `background-image` stack).
 - Gold-gradient pill buttons (min touch target 48px), press = scale(.96) + glow; glass-morphism HUD cards (blur, 1px gold border, inner shadow); title 'SWOOSH' in gold gradient text with shine sweep animation.
 - Fonts: Google Fonts `Cinzel` (display) + `Nunito` (UI) via `<link>`, robust fallback stacks.
 - Level map: vertical winding path of round nodes (numbered, 0–3 star row under each, locked = dim + 🔒), current level pulses.

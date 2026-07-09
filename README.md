@@ -1,6 +1,6 @@
-# Swoosh 🎰
+# Swoosh 💎
 
-A mobile-first match-3 puzzle game with casino-style aesthetics — jewel tones, neon glow, spring-physics animations, particle explosions.
+A mobile-first match-3 puzzle game with a premium jewel-box aesthetic — faceted gems, gold glow, jackpot-sized cascade payoffs, spring-physics animations, particle explosions.
 
 ## Play locally
 

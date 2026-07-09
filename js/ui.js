@@ -5,8 +5,8 @@
 import { LEVELS } from './levels.js';
 import { storage } from './storage.js';
 
-// Casino suit glyph per color id (matches candy silhouettes in the contract).
-const GOAL_GLYPHS = ['♥', '♦', '♣', '★', '♠', '◉'];
+// Gem-cut glyph per color id (matches the gem silhouettes in the contract).
+const GOAL_GLYPHS = ['●', '⬥', '⬢', '⧫', '▲', '◉'];
 const COLOR_CLASS = ['gi-ruby', 'gi-amber', 'gi-emerald', 'gi-sapphire', 'gi-amethyst', 'gi-pearl'];
 
 const STAR_FIRST_DELAY = 600;   // ms until star 1 pops in the win modal
@@ -261,7 +261,7 @@ export class UI {
       count.className = 'goal-count';
       if (g.type === 'collect') {
         icon.className = 'goal-icon ' + (COLOR_CLASS[g.color] || 'gi-score');
-        icon.textContent = GOAL_GLYPHS[g.color] || '♥';
+        icon.textContent = GOAL_GLYPHS[g.color] || '●';
       } else if (g.type === 'jelly') {
         icon.className = 'goal-icon gi-jelly';
         icon.textContent = '◈';

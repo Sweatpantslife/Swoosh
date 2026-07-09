@@ -17,21 +17,32 @@
       <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
     <clipPath id="ab-clip">
-      <path d="M64 8 Q86 40 112 64 Q86 88 64 120 Q42 88 16 64 Q42 40 64 8 Z"/>
+      <path d="M64 5 C91 32 91 96 64 123 C37 96 37 32 64 5 Z"/>
     </clipPath>
     <filter id="ab-blur" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="5"/>
     </filter>
   </defs>
-  <path d="M64 8 Q86 40 112 64 Q86 88 64 120 Q42 88 16 64 Q42 40 64 8 Z" fill="url(#ab-body)"/>
+  <!-- marquise cut: pointed eye-shaped ellipse with long facets running tip to tip -->
+  <path d="M64 5 C91 32 91 96 64 123 C37 96 37 32 64 5 Z" fill="url(#ab-body)"/>
   <g clip-path="url(#ab-clip)">
-    <ellipse cx="84" cy="94" rx="42" ry="34" fill="#a35400" opacity="0.5" filter="url(#ab-blur)"/>
-    <ellipse cx="44" cy="34" rx="30" ry="26" fill="#fff0b8" opacity="0.5" filter="url(#ab-blur)"/>
-    <path d="M64 8 Q86 40 112 64 Q86 88 64 120 Q42 88 16 64 Q42 40 64 8 Z" fill="none" stroke="#ffe08a" stroke-width="6" opacity="0.5" filter="url(#ab-blur)" transform="translate(64 64) scale(0.92) translate(-64 -64)"/>
-    <path d="M64 30 L92 64 L64 98 L36 64 Z" fill="#ffffff" opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.6"/>
-    <path d="M64 8 L64 30 M112 64 L92 64 M64 120 L64 98 M16 64 L36 64" stroke="#8f5400" stroke-opacity="0.28" stroke-width="1.6"/>
-    <ellipse cx="50" cy="34" rx="13" ry="8" transform="rotate(-40 50 34)" fill="url(#ab-spec)"/>
-    <circle cx="60" cy="24" r="3" fill="#ffffff" opacity="0.92"/>
+    <ellipse cx="80" cy="96" rx="38" ry="34" fill="#a35400" opacity="0.5" filter="url(#ab-blur)"/>
+    <ellipse cx="48" cy="32" rx="28" ry="26" fill="#fff0b8" opacity="0.5" filter="url(#ab-blur)"/>
+    <path d="M64 5 C91 32 91 96 64 123 C37 96 37 32 64 5 Z" fill="none" stroke="#ffe08a" stroke-width="6" opacity="0.5" filter="url(#ab-blur)" transform="translate(64 64) scale(0.9) translate(-64 -64)"/>
+    <!-- long crown facets from tips and girdle to the table -->
+    <g stroke="#8f5400" stroke-opacity="0.3" stroke-width="1.6">
+      <path d="M64 5 L54 44 M64 5 L74 44 M64 123 L54 84 M64 123 L74 84 M44 64 L53.5 64 M84 64 L74.5 64"/>
+    </g>
+    <g stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.4">
+      <path d="M64 5 L64 32 M64 123 L64 96 M54 44 L44 64 L54 84 M74 44 L84 64 L74 84"/>
+    </g>
+    <!-- elongated table lozenge -->
+    <path d="M64 32 C72 42 74.5 52 74.5 64 C74.5 76 72 86 64 96 C56 86 53.5 76 53.5 64 C53.5 52 56 42 64 32 Z" fill="#ffffff" opacity="0.1" stroke="#ffffff" stroke-opacity="0.3" stroke-width="1.6"/>
+    <!-- lit and shaded facets -->
+    <path d="M64 5 L54 44 L64 32 Z" fill="#ffffff" opacity="0.16"/>
+    <path d="M64 123 L74 84 L64 96 Z" fill="#7a4700" opacity="0.16"/>
+    <ellipse cx="53" cy="36" rx="11" ry="8" transform="rotate(-52 53 36)" fill="url(#ab-spec)"/>
+    <circle cx="61" cy="22" r="3" fill="#ffffff" opacity="0.92"/>
   </g>
-  <path d="M64 8 Q86 40 112 64 Q86 88 64 120 Q42 88 16 64 Q42 40 64 8 Z" fill="none" stroke="url(#ab-rim)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M64 5 C91 32 91 96 64 123 C37 96 37 32 64 5 Z" fill="none" stroke="url(#ab-rim)" stroke-width="3" stroke-linejoin="round"/>
 </svg>

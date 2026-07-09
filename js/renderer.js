@@ -409,7 +409,7 @@ export class Renderer {
 
   async _stepShuffle(step, audio) {
     audio?.play('sfx-swap');
-    // Lift all cells, re-target with tiny per-tile delays — a card riffle.
+    // Lift all cells, re-target with tiny per-tile delays — a glittering ripple.
     const entries = [];
     for (const mv of step.cells) {
       const tile = this.tiles.get(mv.id) || this._at(mv.from);

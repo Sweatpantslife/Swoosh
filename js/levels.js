@@ -12,19 +12,19 @@
 export const LEVELS = [
   // --- Act 1: warm welcome (score tutorials, failure-free pacing) ---
   {
-    id: 1, name: 'Welcome Spin',
+    id: 1, name: 'First Facet',
     rows: 7, cols: 7, colors: 4, moves: 24,
     goals: [{ type: 'score', target: 1500 }],
     starScores: [1500, 3200, 6000],
   },
   {
-    id: 2, name: 'Double Down',
+    id: 2, name: 'Double Shine',
     rows: 7, cols: 7, colors: 4, moves: 22,
     goals: [{ type: 'score', target: 2600 }],
     starScores: [2600, 4600, 7000],
   },
   {
-    id: 3, name: 'Triple Sevens',
+    id: 3, name: 'Triple Sparkle',
     rows: 8, cols: 8, colors: 4, moves: 22,
     goals: [{ type: 'score', target: 3800 }],
     starScores: [3800, 5800, 8600],
@@ -38,7 +38,7 @@ export const LEVELS = [
     starScores: [2600, 8000, 14000],
   },
   {
-    id: 5, name: 'High Roller', // pulse: two collect goals at once
+    id: 5, name: 'Treasure Trove', // pulse: two collect goals at once
     rows: 8, cols: 8, colors: 5, moves: 21,
     goals: [
       { type: 'collect', color: 0, target: 18 },
@@ -49,7 +49,7 @@ export const LEVELS = [
 
   // --- Jelly arrives (L6) on a small friendly board ---
   {
-    id: 6, name: 'Jelly Ante',
+    id: 6, name: 'Jelly Gleam',
     rows: 7, cols: 7, colors: 4, moves: 20,
     goals: [{ type: 'jelly' }],
     layout: [
@@ -98,7 +98,7 @@ export const LEVELS = [
     starScores: [5200, 6800, 8200],
   },
   {
-    id: 9, name: 'Split Pot', // first mixed goal: collect + a jelly strip
+    id: 9, name: 'Twin Treasures', // first mixed goal: collect + a jelly strip
     rows: 9, cols: 9, colors: 5, moves: 21,
     goals: [
       { type: 'collect', color: 2, target: 22 },
@@ -120,7 +120,7 @@ export const LEVELS = [
 
   // --- Locks arrive (L10): pulse, then breather ---
   {
-    id: 10, name: 'Caged Cards', // pulse
+    id: 10, name: 'Caged Gems', // pulse
     rows: 7, cols: 7, colors: 4, moves: 20,
     goals: [{ type: 'locks' }],
     layout: [
@@ -229,7 +229,7 @@ export const LEVELS = [
     starScores: [6000, 8400, 11500],
   },
   {
-    id: 18, name: 'Six of a Kind', // 6th color debuts on a clean board
+    id: 18, name: 'Six Facets', // 6th color debuts on a clean board
     rows: 8, cols: 8, colors: 6, moves: 22,
     goals: [{ type: 'collect', color: 5, target: 16 }],
     starScores: [3000, 7500, 12500],
@@ -254,7 +254,7 @@ export const LEVELS = [
     starScores: [3000, 6200, 9600],
   },
   {
-    id: 20, name: 'Full House', // pulse: collect + locks
+    id: 20, name: 'Treasure House', // pulse: collect + locks
     rows: 8, cols: 8, colors: 5, moves: 20,
     goals: [
       { type: 'collect', color: 1, target: 18 },
@@ -310,7 +310,7 @@ export const LEVELS = [
     starScores: [5000, 7500, 9800],
   },
   {
-    id: 23, name: 'Royal Flush', // pulse: double jelly core + collect
+    id: 23, name: 'Crown Jewels', // pulse: double jelly core + collect
     rows: 9, cols: 9, colors: 5, moves: 22,
     goals: [
       { type: 'jelly' },
