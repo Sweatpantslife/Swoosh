@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="em-body" cx="42" cy="34" r="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7dffc4"/>
+      <stop offset="0.38" stop-color="#22e893"/>
+      <stop offset="0.66" stop-color="#00d97a"/>
+      <stop offset="0.88" stop-color="#00a05a"/>
+      <stop offset="1" stop-color="#007a42"/>
+    </radialGradient>
+    <linearGradient id="em-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <linearGradient id="em-spec" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="em-clip">
+      <circle cx="64" cy="36" r="23"/>
+      <circle cx="42" cy="66" r="23"/>
+      <circle cx="86" cy="66" r="23"/>
+      <path d="M64 70 C62 90 56 103 45 114 L83 114 C72 103 66 90 64 70 Z"/>
+    </clipPath>
+    <filter id="em-blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+  <g stroke="url(#em-rim)" stroke-width="6" fill="#ffd54a" stroke-linejoin="round">
+    <circle cx="64" cy="36" r="23"/>
+    <circle cx="42" cy="66" r="23"/>
+    <circle cx="86" cy="66" r="23"/>
+    <path d="M64 70 C62 90 56 103 45 114 L83 114 C72 103 66 90 64 70 Z"/>
+  </g>
+  <g fill="url(#em-body)">
+    <circle cx="64" cy="36" r="23"/>
+    <circle cx="42" cy="66" r="23"/>
+    <circle cx="86" cy="66" r="23"/>
+    <path d="M64 70 C62 90 56 103 45 114 L83 114 C72 103 66 90 64 70 Z"/>
+  </g>
+  <g clip-path="url(#em-clip)">
+    <ellipse cx="86" cy="96" rx="44" ry="34" fill="#014d2b" opacity="0.5" filter="url(#em-blur)"/>
+    <ellipse cx="46" cy="32" rx="32" ry="26" fill="#a8ffd8" opacity="0.5" filter="url(#em-blur)"/>
+    <circle cx="64" cy="36" r="19" fill="none" stroke="#a8ffd8" stroke-width="4" opacity="0.4" filter="url(#em-blur)"/>
+    <circle cx="42" cy="66" r="19" fill="none" stroke="#a8ffd8" stroke-width="4" opacity="0.28" filter="url(#em-blur)"/>
+    <ellipse cx="54" cy="26" rx="13" ry="8" transform="rotate(-28 54 26)" fill="url(#em-spec)"/>
+    <ellipse cx="32" cy="58" rx="8" ry="5" transform="rotate(-30 32 58)" fill="#ffffff" opacity="0.4"/>
+    <circle cx="66" cy="20" r="3" fill="#ffffff" opacity="0.92"/>
+  </g>
+</svg>

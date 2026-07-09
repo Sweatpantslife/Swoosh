@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="sp-body" cx="0.34" cy="0.26" r="0.95">
+      <stop offset="0" stop-color="#9cc6ff"/>
+      <stop offset="0.36" stop-color="#57a3ff"/>
+      <stop offset="0.64" stop-color="#2e8bff"/>
+      <stop offset="0.88" stop-color="#1259c3"/>
+      <stop offset="1" stop-color="#0b3d8f"/>
+    </radialGradient>
+    <linearGradient id="sp-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <linearGradient id="sp-spec" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="sp-clip">
+      <path d="M64 12 L78.7 45.8 L115.4 49.3 L87.8 73.7 L95.7 109.7 L64 91 L32.3 109.7 L40.2 73.7 L12.6 49.3 L49.3 45.8 Z"/>
+    </clipPath>
+    <filter id="sp-blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+  <path d="M64 12 L78.7 45.8 L115.4 49.3 L87.8 73.7 L95.7 109.7 L64 91 L32.3 109.7 L40.2 73.7 L12.6 49.3 L49.3 45.8 Z" fill="url(#sp-body)" stroke-linejoin="round"/>
+  <g clip-path="url(#sp-clip)">
+    <ellipse cx="84" cy="98" rx="46" ry="34" fill="#072a63" opacity="0.55" filter="url(#sp-blur)"/>
+    <ellipse cx="44" cy="34" rx="32" ry="26" fill="#c3dcff" opacity="0.5" filter="url(#sp-blur)"/>
+    <path d="M78.7 45.8 L87.8 73.7 L64 91 L40.2 73.7 L49.3 45.8 Z" fill="#ffffff" opacity="0.07" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.5"/>
+    <path d="M64 12 L64 66 M115.4 49.3 L64 66 M95.7 109.7 L64 66 M32.3 109.7 L64 66 M12.6 49.3 L64 66" stroke="#0b3d8f" stroke-opacity="0.3" stroke-width="1.5"/>
+    <ellipse cx="52" cy="38" rx="13" ry="7.5" transform="rotate(-30 52 38)" fill="url(#sp-spec)"/>
+    <circle cx="64" cy="24" r="3" fill="#ffffff" opacity="0.92"/>
+  </g>
+  <path d="M64 12 L78.7 45.8 L115.4 49.3 L87.8 73.7 L95.7 109.7 L64 91 L32.3 109.7 L40.2 73.7 L12.6 49.3 L49.3 45.8 Z" fill="none" stroke="url(#sp-rim)" stroke-width="3" stroke-linejoin="round"/>
+</svg>

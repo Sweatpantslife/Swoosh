@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="pl-body" cx="0.34" cy="0.28" r="0.95">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.45" stop-color="#f4f6ff"/>
+      <stop offset="0.78" stop-color="#dde3f4"/>
+      <stop offset="1" stop-color="#c0c9e0"/>
+    </radialGradient>
+    <radialGradient id="pl-inner" cx="0.36" cy="0.3" r="0.9">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.6" stop-color="#f4f6ff"/>
+      <stop offset="1" stop-color="#ccd4e8"/>
+    </radialGradient>
+    <linearGradient id="pl-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <linearGradient id="pl-notch" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="1" stop-color="#d9a629"/>
+    </linearGradient>
+    <linearGradient id="pl-spec" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.98"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="pl-clip">
+      <circle cx="64" cy="64" r="55"/>
+    </clipPath>
+    <filter id="pl-blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+  <circle cx="64" cy="64" r="55" fill="url(#pl-body)"/>
+  <g clip-path="url(#pl-clip)">
+    <ellipse cx="82" cy="94" rx="48" ry="36" fill="#8c98b8" opacity="0.45" filter="url(#pl-blur)"/>
+    <g fill="url(#pl-notch)" stroke="#b8860b" stroke-width="1" stroke-opacity="0.5">
+      <rect x="56" y="4" width="16" height="17" rx="3.5"/>
+      <rect x="56" y="4" width="16" height="17" rx="3.5" transform="rotate(45 64 64)"/>
+      <rect x="56" y="4" width="16" height="17" rx="3.5" transform="rotate(90 64 64)"/>
+      <rect x="56" y="4" width="16" height="17" rx="3.5" transform="rotate(135 64 64)"/>
+      <rect x="56" y="4" width="16" height="17" rx="3.5" transform="rotate(180 64 64)"/>
+      <rect x="56" y="4" width="16" height="17" rx="3.5" transform="rotate(225 64 64)"/>
+      <rect x="56" y="4" width="16" height="17" rx="3.5" transform="rotate(270 64 64)"/>
+      <rect x="56" y="4" width="16" height="17" rx="3.5" transform="rotate(315 64 64)"/>
+    </g>
+    <circle cx="64" cy="64" r="44" fill="none" stroke="#aab4d0" stroke-width="1.6" stroke-dasharray="4 7" opacity="0.85"/>
+    <circle cx="64" cy="64" r="33" fill="url(#pl-inner)" stroke="url(#pl-rim)" stroke-width="2"/>
+    <ellipse cx="54" cy="52" rx="16" ry="12" fill="#ffd6e8" opacity="0.35" filter="url(#pl-blur)"/>
+    <ellipse cx="76" cy="76" rx="16" ry="12" fill="#cfe0ff" opacity="0.35" filter="url(#pl-blur)"/>
+    <ellipse cx="48" cy="40" rx="17" ry="10" transform="rotate(-30 48 40)" fill="url(#pl-spec)"/>
+    <circle cx="63" cy="30" r="3" fill="#ffffff" opacity="0.95"/>
+  </g>
+  <circle cx="64" cy="64" r="55" fill="none" stroke="url(#pl-rim)" stroke-width="3"/>
+</svg>

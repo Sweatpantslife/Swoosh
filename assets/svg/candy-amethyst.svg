@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="ay-body" cx="42" cy="36" r="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d89bff"/>
+      <stop offset="0.36" stop-color="#c470ff"/>
+      <stop offset="0.64" stop-color="#b44cff"/>
+      <stop offset="0.88" stop-color="#7a1fd0"/>
+      <stop offset="1" stop-color="#55129a"/>
+    </radialGradient>
+    <linearGradient id="ay-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <linearGradient id="ay-spec" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="ay-clip">
+      <path d="M64 8 C72 28 106 44 106 70 C106 87 93 97 79 97 C73 97 68 95 64 90 C60 95 55 97 49 97 C35 97 22 87 22 70 C22 44 56 28 64 8 Z"/>
+      <path d="M64 84 C63 98 57 109 47 118 L81 118 C71 109 65 98 64 84 Z"/>
+    </clipPath>
+    <filter id="ay-blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+  <g stroke="url(#ay-rim)" stroke-width="6" fill="#ffd54a" stroke-linejoin="round">
+    <path d="M64 8 C72 28 106 44 106 70 C106 87 93 97 79 97 C73 97 68 95 64 90 C60 95 55 97 49 97 C35 97 22 87 22 70 C22 44 56 28 64 8 Z"/>
+    <path d="M64 84 C63 98 57 109 47 118 L81 118 C71 109 65 98 64 84 Z"/>
+  </g>
+  <g fill="url(#ay-body)">
+    <path d="M64 8 C72 28 106 44 106 70 C106 87 93 97 79 97 C73 97 68 95 64 90 C60 95 55 97 49 97 C35 97 22 87 22 70 C22 44 56 28 64 8 Z"/>
+    <path d="M64 84 C63 98 57 109 47 118 L81 118 C71 109 65 98 64 84 Z"/>
+  </g>
+  <g clip-path="url(#ay-clip)">
+    <ellipse cx="84" cy="92" rx="44" ry="36" fill="#3f0d75" opacity="0.5" filter="url(#ay-blur)"/>
+    <ellipse cx="44" cy="32" rx="32" ry="26" fill="#ecd0ff" opacity="0.5" filter="url(#ay-blur)"/>
+    <path d="M64 8 C72 28 106 44 106 70 C106 87 93 97 79 97 C73 97 68 95 64 90 C60 95 55 97 49 97 C35 97 22 87 22 70 C22 44 56 28 64 8 Z" fill="none" stroke="#e3baff" stroke-width="5" opacity="0.45" filter="url(#ay-blur)" transform="translate(64 56) scale(0.9) translate(-64 -56)"/>
+    <path d="M34 46 Q52 26 64 20 Q76 26 94 46 Q74 28 64 30 Q54 28 34 46 Z" fill="#ffffff" opacity="0.16"/>
+    <ellipse cx="46" cy="38" rx="14" ry="8.5" transform="rotate(-32 46 38)" fill="url(#ay-spec)"/>
+    <circle cx="59" cy="24" r="3.2" fill="#ffffff" opacity="0.92"/>
+  </g>
+</svg>

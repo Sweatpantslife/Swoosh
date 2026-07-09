@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="lk-gold" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffec9e"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#b8860b"/>
+    </linearGradient>
+    <linearGradient id="lk-body" x1="44" y1="90" x2="84" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.55" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+  </defs>
+  <!-- cage bars: dark halo under bright gold, center stays transparent -->
+  <g fill="#3a2400" opacity="0.55">
+    <rect x="39.5" y="10" width="7" height="108" rx="3.5"/>
+    <rect x="81.5" y="10" width="7" height="108" rx="3.5"/>
+    <rect x="10" y="39.5" width="108" height="7" rx="3.5"/>
+    <rect x="10" y="81.5" width="108" height="7" rx="3.5"/>
+  </g>
+  <g fill="url(#lk-gold)">
+    <rect x="41" y="10" width="4" height="108" rx="2"/>
+    <rect x="83" y="10" width="4" height="108" rx="2"/>
+    <rect x="10" y="41" width="108" height="4" rx="2"/>
+    <rect x="10" y="83" width="108" height="4" rx="2"/>
+  </g>
+  <!-- outer frame -->
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="none" stroke="#3a2400" stroke-width="9" opacity="0.55"/>
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="none" stroke="url(#lk-gold)" stroke-width="5.5"/>
+  <!-- corner rivets -->
+  <g fill="#ffec9e" stroke="#b8860b" stroke-width="1.4">
+    <circle cx="16.5" cy="16.5" r="4"/>
+    <circle cx="111.5" cy="16.5" r="4"/>
+    <circle cx="16.5" cy="111.5" r="4"/>
+    <circle cx="111.5" cy="111.5" r="4"/>
+  </g>
+  <!-- padlock -->
+  <path d="M52 92 L52 84 A12 12 0 0 1 76 84 L76 92" fill="none" stroke="#3a2400" stroke-width="9" stroke-linecap="round" opacity="0.6"/>
+  <path d="M52 92 L52 84 A12 12 0 0 1 76 84 L76 92" fill="none" stroke="url(#lk-gold)" stroke-width="5.5" stroke-linecap="round"/>
+  <rect x="44" y="90" width="40" height="28" rx="7" fill="url(#lk-body)" stroke="#3a2400" stroke-width="2.4"/>
+  <rect x="48.5" y="94.5" width="31" height="8" rx="4" fill="#ffffff" opacity="0.3"/>
+  <circle cx="64" cy="102" r="4.6" fill="#4a2c00"/>
+  <rect x="61.8" y="103.5" width="4.4" height="8.5" rx="2.2" fill="#4a2c00"/>
+</svg>

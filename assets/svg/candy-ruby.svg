@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="rb-body" cx="0.34" cy="0.26" r="0.95">
+      <stop offset="0" stop-color="#ff8ba3"/>
+      <stop offset="0.35" stop-color="#ff4d70"/>
+      <stop offset="0.65" stop-color="#ff2d55"/>
+      <stop offset="0.88" stop-color="#b3123a"/>
+      <stop offset="1" stop-color="#8c0c2c"/>
+    </radialGradient>
+    <linearGradient id="rb-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <linearGradient id="rb-spec" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="rb-clip">
+      <path d="M64 114 C32 90 12 66 12 42 C12 23 26 10 43 10 C52 10 60 15 64 24 C68 15 76 10 85 10 C102 10 116 23 116 42 C116 66 96 90 64 114 Z"/>
+    </clipPath>
+    <filter id="rb-blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+  <path d="M64 114 C32 90 12 66 12 42 C12 23 26 10 43 10 C52 10 60 15 64 24 C68 15 76 10 85 10 C102 10 116 23 116 42 C116 66 96 90 64 114 Z" fill="url(#rb-body)"/>
+  <g clip-path="url(#rb-clip)">
+    <ellipse cx="80" cy="98" rx="46" ry="32" fill="#7a0a2a" opacity="0.5" filter="url(#rb-blur)"/>
+    <ellipse cx="42" cy="30" rx="34" ry="24" fill="#ffb1c1" opacity="0.45" filter="url(#rb-blur)"/>
+    <path d="M64 114 C32 90 12 66 12 42 C12 23 26 10 43 10 C52 10 60 15 64 24 C68 15 76 10 85 10 C102 10 116 23 116 42 C116 66 96 90 64 114 Z" fill="none" stroke="#ffc4d0" stroke-width="6" opacity="0.5" filter="url(#rb-blur)" transform="translate(64 62) scale(0.93) translate(-64 -62)"/>
+    <path d="M20 44 Q40 20 64 30 Q88 20 108 44 Q86 12 64 24 Q42 12 20 44 Z" fill="#ffffff" opacity="0.18"/>
+    <ellipse cx="41" cy="35" rx="16" ry="9.5" transform="rotate(-26 41 35)" fill="url(#rb-spec)"/>
+    <circle cx="55" cy="25" r="3.4" fill="#ffffff" opacity="0.92"/>
+  </g>
+  <path d="M64 114 C32 90 12 66 12 42 C12 23 26 10 43 10 C52 10 60 15 64 24 C68 15 76 10 85 10 C102 10 116 23 116 42 C116 66 96 90 64 114 Z" fill="none" stroke="url(#rb-rim)" stroke-width="3" stroke-linejoin="round"/>
+</svg>

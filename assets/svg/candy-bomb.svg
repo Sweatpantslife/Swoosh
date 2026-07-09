@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="bm-body" cx="0.32" cy="0.26" r="0.95">
+      <stop offset="0" stop-color="#6f6488"/>
+      <stop offset="0.4" stop-color="#3a3348"/>
+      <stop offset="0.75" stop-color="#181223"/>
+      <stop offset="1" stop-color="#070510"/>
+    </radialGradient>
+    <linearGradient id="bm-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <linearGradient id="bm-spec" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="bm-clip">
+      <circle cx="64" cy="65" r="52"/>
+    </clipPath>
+    <filter id="bm-blur" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+    <path id="bm-sp" d="M0 -7 Q1.6 -1.6 7 0 Q1.6 1.6 0 7 Q-1.6 1.6 -7 0 Q-1.6 -1.6 0 -7 Z"/>
+  </defs>
+  <circle cx="64" cy="65" r="52" fill="url(#bm-body)"/>
+  <g clip-path="url(#bm-clip)">
+    <ellipse cx="82" cy="96" rx="46" ry="32" fill="#000000" opacity="0.55" filter="url(#bm-blur)"/>
+    <circle cx="64" cy="65" r="46" fill="none" stroke="#ffd54a" stroke-width="1.6" opacity="0.35"/>
+    <g filter="url(#bm-blur)" opacity="0.9">
+      <use href="#bm-sp" x="0" y="0" transform="translate(44 50) scale(1.0)" fill="#ff2d55"/>
+      <use href="#bm-sp" x="0" y="0" transform="translate(83 40) scale(0.75)" fill="#ffb300"/>
+      <use href="#bm-sp" x="0" y="0" transform="translate(91 78) scale(1.05)" fill="#00d97a"/>
+      <use href="#bm-sp" x="0" y="0" transform="translate(52 90) scale(0.85)" fill="#2e8bff"/>
+      <use href="#bm-sp" x="0" y="0" transform="translate(68 64) scale(1.15)" fill="#b44cff"/>
+      <use href="#bm-sp" x="0" y="0" transform="translate(34 70) scale(0.6)" fill="#f4f6ff"/>
+    </g>
+    <use href="#bm-sp" transform="translate(44 50) scale(0.55)" fill="#ffd1db"/>
+    <use href="#bm-sp" transform="translate(83 40) scale(0.42)" fill="#ffe4a8"/>
+    <use href="#bm-sp" transform="translate(91 78) scale(0.58)" fill="#c2ffe4"/>
+    <use href="#bm-sp" transform="translate(52 90) scale(0.48)" fill="#cfe2ff"/>
+    <use href="#bm-sp" transform="translate(68 64) scale(0.64)" fill="#ecd6ff"/>
+    <use href="#bm-sp" transform="translate(34 70) scale(0.34)" fill="#ffffff"/>
+    <circle cx="76" cy="49" r="1.8" fill="#ffffff" opacity="0.85"/>
+    <circle cx="58" cy="77" r="1.5" fill="#ffffff" opacity="0.7"/>
+    <circle cx="79" cy="90" r="1.4" fill="#ffd54a" opacity="0.8"/>
+    <circle cx="40" cy="86" r="1.4" fill="#ffd54a" opacity="0.6"/>
+    <ellipse cx="46" cy="34" rx="16" ry="10" transform="rotate(-28 46 34)" fill="url(#bm-spec)"/>
+    <circle cx="60" cy="26" r="3" fill="#ffffff" opacity="0.9"/>
+  </g>
+  <circle cx="64" cy="65" r="52" fill="none" stroke="url(#bm-rim)" stroke-width="3.5"/>
+</svg>

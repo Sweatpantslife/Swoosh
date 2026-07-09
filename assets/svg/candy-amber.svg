@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="ab-body" cx="0.33" cy="0.25" r="0.95">
+      <stop offset="0" stop-color="#ffe08a"/>
+      <stop offset="0.38" stop-color="#ffc933"/>
+      <stop offset="0.66" stop-color="#ffb300"/>
+      <stop offset="0.88" stop-color="#ff8f00"/>
+      <stop offset="1" stop-color="#c96a00"/>
+    </radialGradient>
+    <linearGradient id="ab-rim" x1="20" y1="12" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe98a"/>
+      <stop offset="0.5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#c9971c"/>
+    </linearGradient>
+    <linearGradient id="ab-spec" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="ab-clip">
+      <path d="M64 8 Q86 40 112 64 Q86 88 64 120 Q42 88 16 64 Q42 40 64 8 Z"/>
+    </clipPath>
+    <filter id="ab-blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+  <path d="M64 8 Q86 40 112 64 Q86 88 64 120 Q42 88 16 64 Q42 40 64 8 Z" fill="url(#ab-body)"/>
+  <g clip-path="url(#ab-clip)">
+    <ellipse cx="84" cy="94" rx="42" ry="34" fill="#a35400" opacity="0.5" filter="url(#ab-blur)"/>
+    <ellipse cx="44" cy="34" rx="30" ry="26" fill="#fff0b8" opacity="0.5" filter="url(#ab-blur)"/>
+    <path d="M64 8 Q86 40 112 64 Q86 88 64 120 Q42 88 16 64 Q42 40 64 8 Z" fill="none" stroke="#ffe08a" stroke-width="6" opacity="0.5" filter="url(#ab-blur)" transform="translate(64 64) scale(0.92) translate(-64 -64)"/>
+    <path d="M64 30 L92 64 L64 98 L36 64 Z" fill="#ffffff" opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.6"/>
+    <path d="M64 8 L64 30 M112 64 L92 64 M64 120 L64 98 M16 64 L36 64" stroke="#8f5400" stroke-opacity="0.28" stroke-width="1.6"/>
+    <ellipse cx="50" cy="34" rx="13" ry="8" transform="rotate(-40 50 34)" fill="url(#ab-spec)"/>
+    <circle cx="60" cy="24" r="3" fill="#ffffff" opacity="0.92"/>
+  </g>
+  <path d="M64 8 Q86 40 112 64 Q86 88 64 120 Q42 88 16 64 Q42 40 64 8 Z" fill="none" stroke="url(#ab-rim)" stroke-width="3" stroke-linejoin="round"/>
+</svg>
