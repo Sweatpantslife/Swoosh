@@ -191,3 +191,7 @@ Owns: SVG sprite loading (fetch `assets/svg/*.svg` → Image → rasterize to of
 ## Testing hooks
 - `tests/engine.test.mjs`: plain-node assertions (`node tests/engine.test.mjs`, exit 0 on pass) covering: match detection (h/v/3/4/5/T/L), special creation & firing, all combo pairings, gravity/segment refill with holes & locks, jelly layers, lock breaking, no-pre-matches at spawn, shuffle-when-stuck, scoring, goals/win/fail/stars, serialize/deserialize round-trip.
 - `window.__swoosh` (above) for browser automation.
+
+## Clarifications (v1.1)
+- Timeline ownership: Renderer.playSteps drives ALL step timing and invokes fx.* and audio.play(...) effects itself at the exact animation moments, following the step-to-effect mapping policy written in the main.js section. main.js supplies the fx/audio/hooks objects and handles HUD updates, banners, persistence and win/fail flow via hooks {onMatchStep(step), onEnd(step)}.
+- window.__swoosh must also expose swap(a, b) -> Promise which runs the exact same pipeline as user input (engine trySwap + playSteps + persistence), for automated testing.
