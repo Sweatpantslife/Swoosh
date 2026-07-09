@@ -304,12 +304,24 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   text-shadow: 0 0 6px rgba(255, 190, 40, 0.8);
 }
 .map-node.locked {
-  filter: grayscale(0.9) brightness(0.75);
-  opacity: 0.45;
-  border-color: rgba(180, 170, 200, 0.4);
+  filter: grayscale(0.5) brightness(0.95);
+  opacity: 0.8;
+  border-color: rgba(180, 170, 200, 0.5);
   cursor: default;
 }
-.map-node .lock-glyph { font-size: 20px; text-shadow: none; }
+.map-node.locked .locked-num {
+  color: rgba(210, 195, 235, 0.5);
+  text-shadow: none;
+}
+.map-node .lock-glyph {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 13px;
+  line-height: 1;
+  text-shadow: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
 .map-node.current {
   animation: node-breathe 1.8s ease-in-out infinite;
 }
@@ -421,20 +433,20 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .goal-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: 8px;
+  font-size: 17px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--text);
   transition: opacity 0.3s;
 }
 .goal-icon {
-  width: 22px;
-  height: 22px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 13px;
+  font-size: 17px;
   line-height: 1;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
@@ -448,7 +460,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .gi-pearl    { background: radial-gradient(circle at 32% 28%, #ffffff, #f4f6ff 55%, #c0c9e0); color: #47506b; text-shadow: none; }
 .gi-score    { background: radial-gradient(circle at 32% 28%, #ffe9a8, #ffd54a 55%, #ff8f00); color: var(--ink); text-shadow: none; }
 .gi-jelly    { background: radial-gradient(circle at 32% 28%, #ff8ae2, #e0409f 55%, #92135f); }
-.gi-locks    { background: radial-gradient(circle at 32% 28%, #cdd6ea, #8fa0c0 55%, #4d5b78); font-size: 12px; }
+.gi-locks    { background: radial-gradient(circle at 32% 28%, #cdd6ea, #8fa0c0 55%, #4d5b78); font-size: 16px; }
 .goal-count b { color: #fff6da; }
 .goal-chip.done { opacity: 0.55; }
 .goal-chip.done .goal-count { color: #79f2a8; }
@@ -457,11 +469,23 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 #board-wrap {
   position: relative;
   flex: 0 0 auto;
-  width: min(94vw, 62vh);
+  width: min(94vw, 62vh, calc(100vh - 200px));
+  width: min(94vw, 62dvh, calc(100dvh - 200px));
   max-width: 100%;
   aspect-ratio: 1 / 1;
-  margin: auto;
+  margin: 20px auto auto;
   align-self: center;
+}
+/* gold-trimmed felt table frame under the canvases */
+#board-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 28px;
+  border: 1.5px solid rgba(255, 213, 74, 0.22);
+  background: rgba(38, 15, 74, 0.35);
+  box-shadow: inset 0 2px 18px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
 }
 #canvas-board, #canvas-fx {
   position: absolute;
@@ -470,8 +494,17 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   height: 100%;
 }
 #canvas-board { z-index: 1; }
-#canvas-fx { z-index: 2; touch-action: none; }
-.game-footer { flex: 0 0 4px; }
+/* FX canvas overshoots the board so novas/fireworks aren't clipped at its
+   edge. Requires the matching fx.resize/coordinate-offset change in js/fx.js
+   (main group) so cellToXY coords and pointer input still align. */
+#canvas-fx {
+  z-index: 2;
+  touch-action: none;
+  inset: -15%;
+  width: 130%;
+  height: 130%;
+}
+.game-footer { flex: 1 1 4px; }
 
 /* center banner (SWEET! / CASCADE ×3!) */
 .banner {
@@ -512,15 +545,27 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   z-index: 50;
   display: grid;
   place-items: center;
+  place-items: safe center;
+  align-content: safe center;
   padding: 22px;
+  overflow-y: auto;
   background: rgba(9, 3, 20, 0.62);
   -webkit-backdrop-filter: blur(7px);
   backdrop-filter: blur(7px);
   animation: modal-fade 0.22s ease-out;
 }
+/* win modal: keep residual fireworks readable behind the card */
+#modal-win.modal {
+  background: rgba(9, 3, 20, 0.45);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
 @keyframes modal-fade { from { opacity: 0; } to { opacity: 1; } }
 .modal-card {
   width: min(92vw, 380px);
+  max-height: calc(100vh - 44px);
+  max-height: calc(100dvh - 44px);
+  overflow-y: auto;
   padding: 0 24px 24px;
   border-radius: 26px;
   text-align: center;
@@ -638,6 +683,12 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   100% { opacity: 0; transform: scale(1.5); }
 }
 
+/* short viewports (landscape phones): tighten the win card's vertical rhythm */
+@media (max-height: 480px) {
+  .star-row { margin: 8px 0 2px; }
+  .modal-score { margin: 6px 0 12px; }
+}
+
 /* settings toggles */
 .settings-rows { display: flex; flex-direction: column; gap: 12px; margin: 12px 0 20px; }
 .settings-row {
@@ -663,6 +714,12 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   border: 1px solid rgba(160, 130, 210, 0.4);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
   transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+/* invisible hit-area extension: 58x32 visual -> 66x48 touch target (contract min 48px) */
+.toggle::after {
+  content: '';
+  position: absolute;
+  inset: -8px -4px;
 }
 .toggle-knob {
   position: absolute;

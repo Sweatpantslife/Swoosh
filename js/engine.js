@@ -284,7 +284,7 @@ export class Board {
     return [...groups.values()];
   }
 
-  _plannedSpecial(group, swapCells) {
+  _plannedSpecial(group, swapCells, avoidKeys) {
     let maxRun = group.runs[0];
     for (const run of group.runs) if (run.cells.length > maxRun.cells.length) maxRun = run;
     const hasH = group.runs.some((r) => r.horiz);
@@ -296,10 +296,18 @@ export class Board {
     else if (maxRun.cells.length === 4) special = maxRun.horiz ? 'v' : 'h';
     if (!special) return null;
 
-    // Position: swapped cell if it participated (and is not caged), else center/intersection.
+    // A cell can host the new special only if it is not caged, does not already
+    // hold a special (an existing special must fire, not be swallowed), and is
+    // not a combo cell being consumed this wave.
+    const canHost = ({ r, c }) => {
+      const cell = this.cells[r][c];
+      return !cell.lock && !cell.special && !(avoidKeys && avoidKeys.has(K(r, c)));
+    };
+
+    // Position: swapped cell if it participated (and can host), else center/intersection.
     let pos = null;
     for (const sc of swapCells) {
-      if (sc && group.keySet.has(K(sc.r, sc.c)) && !this.cells[sc.r][sc.c].lock) { pos = sc; break; }
+      if (sc && group.keySet.has(K(sc.r, sc.c)) && canHost(sc)) { pos = sc; break; }
     }
     if (!pos && special === 'wrap') {
       // intersection: a cell present in both an h-run and a v-run of the group
@@ -315,8 +323,8 @@ export class Board {
       }
     }
     if (!pos) pos = maxRun.cells[(maxRun.cells.length / 2) | 0];
-    if (this.cells[pos.r][pos.c].lock) {
-      pos = group.cells.find(({ r, c }) => !this.cells[r][c].lock) || null;
+    if (!canHost(pos)) {
+      pos = group.cells.find((rc) => canHost(rc)) || null;
       if (!pos) return null;
     }
     return { r: pos.r, c: pos.c, special };
@@ -434,9 +442,13 @@ export class Board {
     const createdPos = new Map();
 
     // Plan created specials first, so chain fire never clears them this wave.
-    const swapCells = swapInfo ? [swapInfo.b, swapInfo.a] : [];
+    // Combo swap cells are being consumed by the combo — never plan a new
+    // special on them (they must be cleared, not overwritten).
+    const swapCells = swapInfo && !combo ? [swapInfo.b, swapInfo.a] : [];
+    const comboCells = combo
+      ? new Set([K(swapInfo.a.r, swapInfo.a.c), K(swapInfo.b.r, swapInfo.b.c)]) : null;
     for (const g of this._groupRuns(runs)) {
-      const spec = this._plannedSpecial(g, swapCells);
+      const spec = this._plannedSpecial(g, swapCells, comboCells);
       if (spec) createdPos.set(K(spec.r, spec.c), spec);
     }
 
@@ -548,7 +560,9 @@ export class Board {
           this.cells[rr][c] = candy;
           spawns.push({
             id: candy.id, color: candy.color, special: null,
-            to: { r: rr, c }, fromRow: i - empty, // always negative: spawn-above offset
+            // segment-relative spawn-above row: just above this segment's top
+            // (always < to.r; negative only when the segment starts at row 0).
+            to: { r: rr, c }, fromRow: segTop + i - empty,
           });
         }
         r = segEnd;

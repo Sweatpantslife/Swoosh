@@ -46,6 +46,24 @@ let selected = null;
 let drag = null;
 let hintTimer = 0;
 let audioReady = false;
+let epoch = 0; // bumped on level enter/exit; stale async work checks it and bails
+
+// FX spawn coordinates are board-canvas CSS px; when #canvas-fx is inset
+// beyond the board this shim translates them into fx-canvas space (the offset
+// is measured in resizeBoard). Delegates keep `this === fx` so pool/trauma
+// state stays on the real FX instance.
+const fxOffset = { x: 0, y: 0 };
+const fxBoard = {
+  get shakeOffset() { return fx.shakeOffset; },
+  shake: (i) => fx.shake(i),
+  fireworks: (ms) => fx.fireworks(ms),
+  confettiWin: () => fx.confettiWin(),
+  matchBurst: (x, y, ...rest) => fx.matchBurst(x + fxOffset.x, y + fxOffset.y, ...rest),
+  specialCreate: (x, y, ...rest) => fx.specialCreate(x + fxOffset.x, y + fxOffset.y, ...rest),
+  lineBlast: (x, y, ...rest) => fx.lineBlast(x + fxOffset.x, y + fxOffset.y, ...rest),
+  wrapBlast: (x, y, ...rest) => fx.wrapBlast(x + fxOffset.x, y + fxOffset.y, ...rest),
+  colorBombNova: (x, y) => fx.colorBombNova(x + fxOffset.x, y + fxOffset.y),
+};
 
 // ---------------------------------------------------------------- sprites
 
@@ -98,7 +116,16 @@ function resizeBoard() {
   const h = Math.max(1, Math.round(rect.height));
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   renderer.resize(w, h, dpr);
-  fx.resize(w, h, dpr);
+  // The FX canvas may be inset beyond the board (CSS lets blasts overhang):
+  // size it to its own rect and record the board→fx coordinate offset.
+  const fxRect = canvasFx.getBoundingClientRect();
+  fx.resize(
+    Math.max(1, Math.round(fxRect.width)),
+    Math.max(1, Math.round(fxRect.height)),
+    dpr,
+  );
+  fxOffset.x = rect.left - fxRect.left;
+  fxOffset.y = rect.top - fxRect.top;
   if (renderer.layout) rasterizeSprites(renderer.layout.cell);
 }
 
@@ -201,20 +228,27 @@ function finishWin(score) {
   const stars = Math.max(1, board.stars());
   storage.setLevelResult(currentDef.id, { stars, score });
   storage.clearRun();
-  ui.showWin({
-    stars,
-    score,
-    levelId: currentDef.id,
-    onStarShown: () => audio.play('sfx-star-earned'),
-  });
+  // Let the on-board confetti/fireworks play before the modal covers them.
+  const gen = epoch;
+  const levelId = currentDef.id;
+  setTimeout(() => {
+    if (gen !== epoch) return; // quit/restarted meanwhile
+    ui.showWin({
+      stars,
+      score,
+      levelId,
+      onStarShown: () => audio.play('sfx-star-earned'),
+    });
+  }, 1400);
 }
 
 function finishFail() {
   levelOver = true;
   clearTimeout(hintTimer);
   renderer.showHint(null);
+  const goals = board.goals(); // captured before clearRun: near-miss framing
   storage.clearRun();
-  ui.showFail({ levelId: currentDef.id });
+  ui.showFail({ levelId: currentDef.id, goals });
 }
 
 // ---------------------------------------------------------------- turn pipeline
@@ -231,23 +265,36 @@ function doSwap(a, b) {
   renderer.showHint(null);
   clearTimeout(hintTimer);
 
+  // Capture the epoch: if the level is quit/restarted mid-pipeline, every
+  // hook and the settle handler below become no-ops instead of driving the
+  // HUD/persistence of a board this run no longer owns.
+  const gen = epoch;
+  const runHooks = {
+    onMatchStep: (step) => { if (gen === epoch) hooks.onMatchStep(step); },
+    onEnd: (step) => { if (gen === epoch) hooks.onEnd(step); },
+  };
+
   const result = board.trySwap(a, b);
   if (result.valid) ui.updateHUD({ movesLeft: board.movesLeft });
 
-  return renderer.playSteps(result.steps, fx, audio, hooks).then(() => {
-    if (result.valid && !levelOver) {
-      storage.saveRun(currentDef.id, board.serialize());
-    }
-    inputLocked = false;
-    if (!levelOver) armHint();
-    return result;
-  });
+  return renderer.playSteps(result.steps, fxBoard, audio, runHooks)
+    .catch(() => {})
+    .then(() => {
+      if (gen !== epoch) return result;
+      if (result.valid && !levelOver) {
+        storage.saveRun(currentDef.id, board.serialize());
+      }
+      inputLocked = false;
+      if (!levelOver) armHint();
+      return result;
+    });
 }
 
 // ---------------------------------------------------------------- pointer input (#canvas-fx, top layer)
 
 function canvasPos(e) {
-  const r = canvasFx.getBoundingClientRect();
+  // Board-canvas space: #canvas-fx (the input layer) may be inset beyond it.
+  const r = canvasBoard.getBoundingClientRect();
   return { x: e.clientX - r.left, y: e.clientY - r.top };
 }
 
@@ -300,6 +347,7 @@ canvasFx.addEventListener('pointercancel', endDrag);
 // ---------------------------------------------------------------- screens / level flow
 
 function showMapScreen() {
+  epoch++; // orphan any in-flight playSteps pipeline
   board = null;
   levelOver = false;
   inputLocked = false;
@@ -325,15 +373,20 @@ function resumeRun(run) {
   if (!def || !run.boardJSON) return false;
   try {
     board = Board.deserialize(run.boardJSON, def);
+    currentDef = def;
+    enterGame();
   } catch (_) {
+    // Corrupt/legacy payload (may deserialize yet still blow up in
+    // enterGame): drop it so it can't re-brick every subsequent boot.
+    storage.clearRun();
+    board = null;
     return false;
   }
-  currentDef = def;
-  enterGame();
   return true;
 }
 
 function enterGame() {
+  epoch++; // orphan any in-flight playSteps pipeline
   levelOver = false;
   inputLocked = false;
   selected = null;
@@ -359,7 +412,9 @@ function frame(t) {
   const dt = t - lastT;
   lastT = t;
   fx.update(dt);
-  renderer.render(t, dt);
+  // Map screen (board === null): skip repainting the hidden board canvas —
+  // renderer.setBoard(null) is not part of its contract, so gate here.
+  if (board) renderer.render(t, dt);
   fx.render();
   requestAnimationFrame(frame);
 }
@@ -394,8 +449,14 @@ window.__swoosh = {
 // ---------------------------------------------------------------- boot
 
 (async function boot() {
-  await loadSvgImages();
-  const run = storage.getRun();
-  if (!(run && resumeRun(run))) showMapScreen();
+  // Start the loop first: no failure below may ever leave a dead page.
   requestAnimationFrame(frame);
+  try {
+    await loadSvgImages();
+    const run = storage.getRun();
+    if (run && resumeRun(run)) return;
+  } catch (_) {
+    try { storage.clearRun(); } catch (_) { /* ignore */ }
+  }
+  showMapScreen();
 })();

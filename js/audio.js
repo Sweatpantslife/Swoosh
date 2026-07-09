@@ -1,5 +1,9 @@
 // Swoosh — audio manager (contract: docs/ARCHITECTURE.md)
-// Loads mp3s from assets/audio/, falls back per-name to built-in WebAudio synth voices.
+// Loads sfx mp3s from assets/audio/, falls back per-name to built-in WebAudio
+// synth voices. The music loop streams via an <audio> element (routed through
+// a MediaElementAudioSourceNode) rather than decodeAudioData — decoding the
+// 76s mp3 would pin ~27MB of float32 PCM all session and front-load a 1.5MB
+// download onto the first tap.
 // init() and play() never throw. One console.info max about missing files.
 
 const SFX_NAMES = [
@@ -8,7 +12,6 @@ const SFX_NAMES = [
   'sfx-cascade-1', 'sfx-cascade-2', 'sfx-cascade-3',
   'sfx-level-win', 'sfx-level-fail', 'sfx-star-earned', 'sfx-button',
 ];
-const ALL_NAMES = ['bgm-main-loop', ...SFX_NAMES];
 
 // C-major pentatonic ladder used by the synth voices (keeps everything in key).
 const N = {
@@ -28,7 +31,9 @@ export class AudioMan {
     this.sfxGain = null;
     this.buffers = new Map();
     this._noiseBuf = null;
-    this._bgmSrc = null;
+    this._bgmEl = null;      // HTMLAudioElement streaming the music loop
+    this._bgmNode = null;    // MediaElementAudioSourceNode → musicGain
+    this._bgmPlaying = false;
     this._pad = null;
     this._initPromise = null;
     this._loaded = false;
@@ -63,8 +68,24 @@ export class AudioMan {
       return;
     }
 
+    // Music: streamed, never decoded to a full PCM buffer.
+    try {
+      const el = new Audio();
+      el.loop = true;
+      el.preload = 'none'; // nothing downloads until music actually starts
+      el.src = 'assets/audio/bgm-main-loop.mp3';
+      el.addEventListener('error', () => {
+        const wasPlaying = this._bgmPlaying;
+        this._teardownBgm();
+        if (wasPlaying && this.musicOn && !this._pad) this._startPad();
+      }, { once: true });
+      this._bgmNode = this.ctx.createMediaElementSource(el);
+      this._bgmNode.connect(this.musicGain);
+      this._bgmEl = el;
+    } catch { /* no <audio> support — synth pad fallback */ }
+
     const missing = [];
-    await Promise.all(ALL_NAMES.map(async (name) => {
+    await Promise.all(SFX_NAMES.map(async (name) => {
       try {
         const res = await fetch(`assets/audio/${name}.mp3`);
         if (!res.ok) throw new Error('http');
@@ -114,17 +135,26 @@ export class AudioMan {
   startMusic() {
     try {
       if (!this.ctx || !this.musicOn) return;
-      if (this._bgmSrc || this._pad) return;
+      if (this._bgmPlaying || this._pad) return;
       if (!this._loaded) { this._musicPending = true; return; }
       this._resume();
-      const buf = this.buffers.get('bgm-main-loop');
-      if (buf) {
-        const src = this.ctx.createBufferSource();
-        src.buffer = buf;
-        src.loop = true;
-        src.connect(this.musicGain);
-        src.start();
-        this._bgmSrc = src;
+      if (this._bgmEl) {
+        this._bgmPlaying = true;
+        this._bgmEl.play().catch((err) => {
+          this._bgmPlaying = false;
+          try {
+            if (err && err.name === 'NotAllowedError') {
+              // Autoplay-blocked: retry on the next user gesture.
+              window.addEventListener('pointerdown', () => {
+                if (this.musicOn) this.startMusic();
+              }, { once: true });
+            } else if (this.musicOn && !this._pad) {
+              // File missing/undecodable — same synth-pad fallback as before.
+              this._teardownBgm();
+              this._startPad();
+            }
+          } catch { /* never throws */ }
+        });
         const t = this.ctx.currentTime;
         this.musicGain.gain.cancelScheduledValues(t);
         this.musicGain.gain.setValueAtTime(0.0001, t);
@@ -138,11 +168,11 @@ export class AudioMan {
   stopMusic() {
     try {
       this._musicPending = false;
-      if (this._bgmSrc) {
-        try { this._bgmSrc.stop(); } catch { /* already stopped */ }
-        try { this._bgmSrc.disconnect(); } catch { /* detached */ }
-        this._bgmSrc = null;
+      if (this._bgmEl) {
+        try { this._bgmEl.pause(); } catch { /* ok */ }
+        try { this._bgmEl.currentTime = 0; } catch { /* not seekable yet */ }
       }
+      this._bgmPlaying = false;
       if (this._pad) {
         for (const node of this._pad) {
           try { if (typeof node.stop === 'function') node.stop(); } catch { /* ok */ }
@@ -151,6 +181,19 @@ export class AudioMan {
         this._pad = null;
       }
     } catch { /* never throws */ }
+  }
+
+  /** Drop the streamed-bgm element for good (load failure) — pad takes over. */
+  _teardownBgm() {
+    this._bgmPlaying = false;
+    if (this._bgmEl) {
+      try { this._bgmEl.pause(); } catch { /* ok */ }
+      this._bgmEl = null;
+    }
+    if (this._bgmNode) {
+      try { this._bgmNode.disconnect(); } catch { /* ok */ }
+      this._bgmNode = null;
+    }
   }
 
   setMusicOn(b) {

@@ -73,6 +73,9 @@ export class Renderer {
     this._t = 0;                   // ms clock from render()
     this._fxRef = null;            // last fx passed to playSteps (for shakeOffset)
     this._animating = false;
+    this._lastWaveCleared = 0;     // previous wave size → scales the cascade beat
+    this._staticDrawn = false;     // idle skip: board already painted this pose
+    this._modalIdle = false;       // win/fail modal covers the board — stop repainting
 
     this._boardLayer = null;       // pre-rendered felt cells
     this._pre = null;              // pre-rendered glow/stripe/wrap/sparkle sprites
@@ -86,6 +89,8 @@ export class Renderer {
     this.lockBreaks.length = 0;
     this._selected = null;
     this._hint = null;
+    this._modalIdle = false;
+    this._staticDrawn = false;
     if (this.cssW > 0) {
       this._computeLayout();
       this._syncFromBoard(true);
@@ -97,6 +102,7 @@ export class Renderer {
 
   resize(cssW, cssH, dpr) {
     this.cssW = cssW; this.cssH = cssH; this.dpr = dpr;
+    this._staticDrawn = false;
     this.canvas.width = Math.max(1, Math.round(cssW * dpr));
     this.canvas.height = Math.max(1, Math.round(cssH * dpr));
     this.canvas.style.width = cssW + 'px';
@@ -133,9 +139,9 @@ export class Renderer {
     return { r, c };
   }
 
-  setSelected(cell) { this._selected = cell || null; }
+  setSelected(cell) { this._selected = cell || null; this._staticDrawn = false; }
 
-  showHint(move) { this._hint = move || null; this._hintT = this._t; }
+  showHint(move) { this._hint = move || null; this._hintT = this._t; this._staticDrawn = false; }
 
   // ------------------------------------------------------------ timeline
 
@@ -147,6 +153,7 @@ export class Renderer {
     this._fxRef = fx || this._fxRef;
     this.showHint(null);
     this.setSelected(null);
+    this._modalIdle = false;
     this._animating = true;
     try {
       for (const step of steps) {
@@ -160,7 +167,7 @@ export class Renderer {
           case 'end':       await this._stepEnd(step, fx, audio, hooks); break;
         }
       }
-      await Renderer._sleep(240); // let the last springs breathe
+      await Renderer._sleep(120); // let the last springs breathe
     } finally {
       this._animating = false;
       this._syncFromBoard(false);
@@ -271,12 +278,17 @@ export class Renderer {
         break;
     }
     if (combo) fx?.shake(kind === 'bomb+bomb' ? 1 : 0.6);
+    else if (kind === 'bomb') fx?.shake(0.35);
+    else fx?.shake(0.25); // single stripe/wrap detonation — middle of the trauma ladder
     await Renderer._sleep(wait);
   }
 
   async _stepMatch(step, fx, audio, hooks) {
-    // Small deliberate beat between cascade waves so the chain is readable.
-    if (step.cascade >= 1) await Renderer._sleep(140);
+    // Anticipation beat between cascade waves (research: spend the big
+    // audio-visual build on ~0.5s) — longer after a big previous wave.
+    if (step.cascade >= 1) {
+      await Renderer._sleep(this._lastWaveCleared >= 8 ? 500 : 300);
+    }
 
     hooks.onMatchStep?.(step);
 
@@ -288,8 +300,10 @@ export class Renderer {
       audio?.play(`sfx-cascade-${Math.min(step.cascade, 3)}`);
     }
 
-    // Clear pops + color-matched bursts (budgeted for monster waves).
-    const burstCount = step.cleared.length > 14 ? 8 : 14;
+    // Clear pops + color-matched bursts (budgeted for monster waves; tighter
+    // still on large boards, where raster overdraw dominates the frame).
+    const bigBoard = this.board.rows * this.board.cols > 64;
+    const burstCount = step.cleared.length > 14 ? (bigBoard ? 6 : 8) : (bigBoard ? 10 : 14);
     for (const cl of step.cleared) {
       const tile = this._at(cl);
       const p = this.cellToXY(cl);
@@ -330,12 +344,16 @@ export class Renderer {
       fx?.matchBurst(p.x, p.y + this.layout.cell * 0.18, 'amethyst', 7);
     }
 
+    // Special creation on the player's own move gets a small kick.
+    if (step.cascade === 0 && step.created.length > 0) fx?.shake(0.2);
+
     // Big waves rattle the table.
     if (step.cleared.length >= 12) {
       fx?.shake(Math.min(1, 0.4 + step.cleared.length / 40));
     }
 
-    await Renderer._sleep(260); // hold so the pop is readable
+    this._lastWaveCleared = step.cleared.length;
+    await Renderer._sleep(170); // hold so the pop is readable
   }
 
   async _stepGravity(step) {
@@ -374,8 +392,16 @@ export class Renderer {
       const tile = this._makeTile(s.id, s.color, s.special, 0, s.to);
       this._put(s.to, tile);
       this.tiles.set(s.id, tile);
-      const fromY = this.layout.oy + (s.fromRow + 0.5) * cell;
-      startFall(tile, fromY, s.to, s.to.r - s.fromRow);
+      // Clamp the fall start to this spawn's own column segment (contiguous
+      // masked run containing the landing cell), so the tile never traverses
+      // holes or the occupied upper segment visibly.
+      let segTop = s.to.r;
+      while (segTop > 0 && this.board.mask[segTop - 1][s.to.c]) segTop--;
+      const fromY = Math.max(
+        this.layout.oy + (s.fromRow + 0.5) * cell,
+        this.layout.oy + segTop * cell - cell * 0.86,
+      );
+      startFall(tile, fromY, s.to, Math.max(1, s.to.r - s.fromRow));
     }
 
     await Renderer._sleep(maxT * 1000 + 150); // + landing bounce
@@ -411,6 +437,8 @@ export class Renderer {
     } else if (step.fail) {
       audio?.play('sfx-level-fail');
     }
+    // The win/fail modal covers the board — stop repainting tiles under it.
+    this._modalIdle = !!(step.win || step.fail);
     hooks.onEnd?.(step);
   }
 
@@ -423,12 +451,23 @@ export class Renderer {
     const dts = Renderer._dts(dt);
     this._update(dts);
 
+    // Table shake — read from fx every frame.
+    const sh = this._fxRef ? this._fxRef.shakeOffset : null;
+
+    // Idle skip: no timeline, no shake, and nothing animated on the board
+    // (or a win/fail modal covers it) — paint the pose once, then stop.
+    const shaking = !!sh && (sh.x !== 0 || sh.y !== 0);
+    if (!this._animating && !shaking && (this._modalIdle || !this._hasActiveVisuals())) {
+      if (this._staticDrawn) return;
+      this._staticDrawn = true;
+    } else {
+      this._staticDrawn = false;
+    }
+
     ctx.save();
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     ctx.clearRect(0, 0, this.cssW, this.cssH);
 
-    // Table shake — read from fx every frame.
-    const sh = this._fxRef ? this._fxRef.shakeOffset : null;
     if (sh) ctx.translate(sh.x, sh.y);
 
     // 1. Felt cells (pre-rendered static layer).
@@ -458,12 +497,28 @@ export class Renderer {
     ctx.restore();
   }
 
+  /** Anything on the board that animates frame-to-frame while no timeline runs. */
+  _hasActiveVisuals() {
+    if (this.dying.length || this.lockBreaks.length) return true;
+    if (this._selected || this._hint) return true;
+    for (const row of this.jellyLocal) {
+      for (let c = 0; c < row.length; c++) if (row[c] > 0) return true; // gel wobbles
+    }
+    for (const tile of this.tiles.values()) {
+      if (tile.special || tile.fall || tile.pop > 0 || tile.flashT > 0) return true;
+      if (!tile.ax.settled || !tile.ay.settled) return true;
+      if (Math.abs(tile.sx.p - 1) > 0.01 || Math.abs(tile.sx.v) > 0.1) return true;
+      if (Math.abs(tile.sy.p - 1) > 0.01 || Math.abs(tile.sy.v) > 0.1) return true;
+    }
+    return false;
+  }
+
   _update(dts) {
     for (const tile of this.tiles.values()) this._updateTile(tile, dts);
     for (let i = this.dying.length - 1; i >= 0; i--) {
       const tile = this.dying[i];
       tile.pop += dts;
-      if (tile.pop >= 0.26) this.dying.splice(i, 1);
+      if (tile.pop >= 0.18) this.dying.splice(i, 1);
     }
     for (let i = this.lockBreaks.length - 1; i >= 0; i--) {
       this.lockBreaks[i].t += dts;
@@ -508,7 +563,7 @@ export class Renderer {
     let scale = 1, alpha = 1;
 
     if (tile.pop > 0) { // pop-out: grow, then shrink + fade
-      const k = clamp01(tile.pop / 0.26);
+      const k = clamp01(tile.pop / 0.18);
       if (k < 0.3) scale = 1 + (k / 0.3) * 0.3;
       else { scale = 1.3 * (1 - (k - 0.3) / 0.7); alpha = 1 - (k - 0.3) / 0.7; }
       if (scale <= 0.02) return;
@@ -517,20 +572,38 @@ export class Renderer {
     const size = cell * 0.86 * scale;
     const sx = size * tile.sx.p, sy = size * tile.sy.p;
 
+    // Fast path: plain candy, no overlays, full alpha — a single drawImage
+    // with no save/translate/restore state churn (most tiles, most frames).
+    if (!tile.special && !tile.lock && tile.pop === 0 && tile.flashT <= 0) {
+      const spr = this.sprites.get(`candy-${COLOR_NAMES[tile.color]}`);
+      if (spr) {
+        ctx.drawImage(spr, x - sx / 2, y - sy / 2, sx, sy);
+        return;
+      }
+    }
+
     ctx.save();
     ctx.translate(x, y);
     ctx.globalAlpha = alpha;
 
     // Idle glow for specials — pre-rendered sprite, sin(t) pulse. No shadowBlur.
+    // During a step timeline, settled bystander specials skip the big glow
+    // underlay: it is pure overdraw the eye can't track mid-wave.
     if (tile.special) {
-      const pulse = 0.5 + 0.32 * Math.sin(tMs * 0.006 + tile.glowPhase);
-      const glow = tile.special === 'bomb'
-        ? this._pre.glowBomb
-        : this._pre.glow[tile.color];
-      const gs = cell * 1.9 * (1 + 0.06 * Math.sin(tMs * 0.003 + tile.glowPhase));
-      ctx.globalAlpha = alpha * pulse;
-      ctx.drawImage(glow, -gs / 2, -gs / 2, gs, gs);
-      ctx.globalAlpha = alpha;
+      const bystander = this._animating && !tile.fall && tile.pop === 0
+        && tile.flashT <= 0 && tile.ax.settled && tile.ay.settled;
+      if (!bystander) {
+        const isBomb = tile.special === 'bomb';
+        const pulse = isBomb
+          ? 0.75 + 0.25 * Math.sin(tMs * 0.006 + tile.glowPhase)
+          : 0.5 + 0.32 * Math.sin(tMs * 0.006 + tile.glowPhase);
+        const glow = isBomb ? this._pre.glowBomb : this._pre.glow[tile.color];
+        const gs = cell * (isBomb ? 2.1 : 1.9)
+          * (1 + 0.06 * Math.sin(tMs * 0.003 + tile.glowPhase));
+        ctx.globalAlpha = alpha * pulse;
+        ctx.drawImage(glow, -gs / 2, -gs / 2, gs, gs);
+        ctx.globalAlpha = alpha;
+      }
     }
 
     // Wrapped aura ring behind the candy.
@@ -567,7 +640,7 @@ export class Renderer {
       const rr = cell * 0.46;
       for (let i = 0; i < 4; i++) {
         const a = rot + (i / 4) * TAU;
-        const ss = cell * (0.16 + 0.05 * Math.sin(tMs * 0.01 + i * 1.7));
+        const ss = cell * (0.22 + 0.06 * Math.sin(tMs * 0.01 + i * 1.7));
         ctx.drawImage(this._pre.sparkle,
           Math.cos(a) * rr - ss / 2, Math.sin(a) * rr - ss / 2, ss, ss);
       }
@@ -635,8 +708,14 @@ export class Renderer {
         // Layer 1: translucent magenta gel with a glossy top highlight.
         ctx.beginPath();
         roundRectPath(ctx, x + inset, y + inset, L.cell - inset * 2, L.cell - inset * 2, L.cell * 0.2);
-        ctx.fillStyle = layers >= 2 ? 'rgba(255,45,150,0.46)' : 'rgba(255,45,150,0.28)';
+        ctx.fillStyle = layers >= 2 ? 'rgba(255,45,150,0.46)' : 'rgba(255,45,150,0.38)';
         ctx.fill();
+        if (layers < 2) {
+          // Layer-1 rim so single jelly reads as gel, not a lighting artifact.
+          ctx.strokeStyle = 'rgba(255,90,180,0.55)';
+          ctx.lineWidth = Math.max(1.5, L.cell * 0.03);
+          ctx.stroke();
+        }
         if (layers >= 2) {
           // Layer 2 reads deeper: darker rim + inner shade.
           ctx.strokeStyle = 'rgba(150,0,84,0.75)';
@@ -651,7 +730,7 @@ export class Renderer {
         // Gloss.
         ctx.beginPath();
         ctx.ellipse(x + L.cell * 0.34, y + L.cell * 0.26, L.cell * 0.2, L.cell * 0.09, -0.4, 0, TAU);
-        ctx.fillStyle = 'rgba(255,255,255,0.22)';
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
         ctx.fill();
         ctx.restore();
       }
@@ -776,12 +855,13 @@ export class Renderer {
       glowGold: radial(GOLD),
       glowWhite: radial('#ffffff'),
       glowBomb: mk((g, s) => {
-        // Rainbow halo for the color bomb.
+        // Rainbow halo for the color bomb — hot white/gold core so the bomb
+        // outshines a wrapped candy at idle.
         const grad = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
         grad.addColorStop(0, '#ffffff');
-        grad.addColorStop(0.3, '#b44cff');
-        grad.addColorStop(0.6, '#2e8bff');
-        grad.addColorStop(1, 'rgba(255,45,85,0)');
+        grad.addColorStop(0.25, '#ffd54a');
+        grad.addColorStop(0.55, '#b44cff');
+        grad.addColorStop(1, 'rgba(180,76,255,0)');
         g.fillStyle = grad;
         g.fillRect(0, 0, s, s);
       }),
@@ -825,20 +905,24 @@ export class Renderer {
     g.translate(s / 2, s / 2);
     if (vertical) g.rotate(Math.PI / 2);
     const w = s * 0.62, h = s * 0.085;
-    g.shadowColor = '#ffffff';
-    g.shadowBlur = s * 0.05;
+    // Gold bars with a dark keyline so stripes read on every candy color —
+    // flat white vanished on the white pearl sprite.
+    const grad = g.createLinearGradient(-w / 2, 0, w / 2, 0);
+    grad.addColorStop(0, '#fff3c4');
+    grad.addColorStop(1, '#ffd54a');
+    g.beginPath();
     for (let i = -1; i <= 1; i++) {
       const y = i * s * 0.16;
-      const grad = g.createLinearGradient(-w / 2, 0, w / 2, 0);
-      grad.addColorStop(0, 'rgba(255,255,255,0)');
-      grad.addColorStop(0.25, 'rgba(255,255,255,0.95)');
-      grad.addColorStop(0.75, 'rgba(255,255,255,0.95)');
-      grad.addColorStop(1, 'rgba(255,255,255,0)');
-      g.fillStyle = grad;
-      g.beginPath();
       roundRectPath(g, -w / 2, y - h / 2, w, h, h / 2);
-      g.fill();
     }
+    g.shadowColor = GOLD;
+    g.shadowBlur = s * 0.05;
+    g.fillStyle = grad;
+    g.fill();
+    g.shadowBlur = 0;
+    g.strokeStyle = 'rgba(30,10,50,0.55)';
+    g.lineWidth = Math.max(1, s * 0.012);
+    g.stroke();
     g.restore();
   }
 

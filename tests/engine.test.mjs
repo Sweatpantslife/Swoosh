@@ -94,7 +94,7 @@ function checkStepInvariants(steps) {
       assert(Number.isInteger(s.scoreDelta), 'scoreDelta integer');
       lastTotal = s.scoreTotal;
     }
-    if (s.type === 'gravity') for (const sp of s.spawns) assert(sp.fromRow < 0, 'spawn fromRow negative');
+    if (s.type === 'gravity') for (const sp of s.spawns) assert(sp.fromRow < sp.to.r, 'spawn fromRow above its destination');
   }
 }
 
@@ -415,6 +415,43 @@ test('combo bomb+bomb: clears the ENTIRE board', () => {
   assert(boardFull(b));
 });
 
+test('combo swap that also completes a run: combo cells consumed, run special spawns elsewhere', () => {
+  const b = comboBoard();
+  put(b, 3, 3, 4, 'h'); put(b, 4, 3, 5, 'v');
+  put(b, 4, 1, 4); put(b, 4, 2, 4); put(b, 4, 4, 4); put(b, 4, 5, 4);
+  // stripe+stripe combo whose swap also completes a 5-run of color 4 on row 4
+  const res = b.trySwap({ r: 3, c: 3 }, { r: 4, c: 3 });
+  assert(res.valid);
+  assertEq(firstStep(res.steps, 'special').kind, 'stripe+stripe');
+  const m = firstStep(res.steps, 'match');
+  assert(hasCell(m.cleared, 4, 3) && hasCell(m.cleared, 3, 3), 'both combo specials are consumed');
+  assertEq(m.created.length, 1);
+  assertEq(m.created[0].special, 'bomb', '5-run still yields its bomb');
+  assert(!(m.created[0].r === 4 && m.created[0].c === 3)
+    && !(m.created[0].r === 3 && m.created[0].c === 3), 'bomb not planted on a combo cell');
+  assertEq(m.cleared.length, 12, 'row + column cross minus the created cell');
+});
+
+test('swapping a special into a run of its color: it fires, new special spawns elsewhere', () => {
+  const b = makeBoard();
+  bgFill(b);
+  put(b, 3, 3, 4, 'h');
+  put(b, 4, 1, 4); put(b, 4, 2, 4); put(b, 4, 4, 4); put(b, 4, 5, 4);
+  // swapping the stripe down completes a 5-run through (4,3)
+  const res = b.trySwap({ r: 3, c: 3 }, { r: 4, c: 3 });
+  assert(res.valid);
+  const sp = firstStep(res.steps, 'special');
+  assert(sp, 'existing stripe fired instead of being swallowed');
+  assertEq(sp.kind, 'h');
+  assertEq(sp.origin.r, 4); assertEq(sp.origin.c, 3);
+  const m = firstStep(res.steps, 'match');
+  assertEq(m.created.length, 1);
+  assertEq(m.created[0].special, 'bomb');
+  assert(!(m.created[0].r === 4 && m.created[0].c === 3), 'bomb not planted on the fired stripe');
+  assert(hasCell(m.cleared, 4, 3), 'stripe cell cleared, not overwritten');
+  assertEq(m.cleared.length, 6, 'run + fired row minus the created cell');
+});
+
 // ---------- gravity ----------
 
 test('gravity: holes split columns into independent segments', () => {
@@ -430,7 +467,8 @@ test('gravity: holes split columns into independent segments', () => {
   assert(g.moves.every((mv) => !(mv.from.c === 3 && mv.from.r <= 2)), 'upper segment of col 3 does not move');
   const col3spawns = g.spawns.filter((s) => s.to.c === 3);
   assertEq(col3spawns.length, 3, 'lower segment refills from its own top');
-  assert(col3spawns.every((s) => s.to.r >= 4 && s.fromRow < 0));
+  // segment top is row 4 and 3 cells refill: fromRow is segment-relative (to.r - 3), just above row 4
+  assert(col3spawns.every((s) => s.to.r >= 4 && s.fromRow === s.to.r - 3 && s.fromRow < 4));
   assertEq(b.cells[0][3].id, above[0]); assertEq(b.cells[1][3].id, above[1]); assertEq(b.cells[2][3].id, above[2]);
   assertEq(b.cells[3][3], null, 'hole stays empty');
 });
@@ -451,6 +489,23 @@ test('gravity: locked candies anchor — they never move and split segments', ()
   assertEq(b.cells[2][3].id, locked.id, 'lock still anchored');
   assertEq(b.cells[0][3].id, aboveLock[0]);
   assertEq(b.cells[1][3].id, aboveLock[1]);
+});
+
+test('gravity: refill fromRow is segment-relative for segments below row 0', () => {
+  const b = makeBoard({
+    layout: ['...#...', '...#...', '...#...', '.......', '.......', '.......', '.......'],
+  });
+  bgFill(b);
+  b.cells[5][3] = null; b.cells[6][3] = null;
+  const g = b._applyGravity();
+  const col3 = g.spawns.filter((s) => s.to.c === 3).sort((x, y) => x.to.r - y.to.r);
+  assertEq(col3.length, 2, 'two refills in the lower segment');
+  // segment top is row 3, two empties: spawns animate from rows 1 and 2
+  // (just above the segment's own top), NOT from -2/-1 above the whole board
+  assertEq(col3[0].to.r, 3); assertEq(col3[0].fromRow, 1);
+  assertEq(col3[1].to.r, 4); assertEq(col3[1].fromRow, 2);
+  assert(col3.every((s) => s.fromRow < s.to.r));
+  assert(boardFull(b));
 });
 
 // ---------- locks ----------

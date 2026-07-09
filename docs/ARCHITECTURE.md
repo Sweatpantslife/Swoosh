@@ -61,7 +61,7 @@ Emitted in this order per resolution wave:
 - `{type:'swap-fail', a, b}` — wiggle-and-return.
 - `{type:'special', kind, origin:{r,c}, targets:[{r,c}]}` — one per special activation, emitted BEFORE the match step that clears its targets. `kind` ∈ `'h','v','wrap','bomb','bomb+bomb','bomb+stripe','bomb+wrap','stripe+stripe','stripe+wrap','wrap+wrap'`.
 - `{type:'match', cascade, cleared:[{r,c,color,special}], created:[{r,c,color,special}], jellyCleared:[{r,c}], locksBroken:[{r,c}], scoreDelta, scoreTotal}` — `cascade` is 0 for the wave caused directly by the swap, 1+ for chain reactions. `created` cells are newly-formed specials (NOT cleared). `locksBroken` cells had their cage removed (candy remains, is not cleared that wave).
-- `{type:'gravity', moves:[{id, from:{r,c}, to:{r,c}}], spawns:[{id, color, special:null, to:{r,c}, fromRow}]}` — `fromRow` is a negative row for spawn-above animation.
+- `{type:'gravity', moves:[{id, from:{r,c}, to:{r,c}}], spawns:[{id, color, special:null, to:{r,c}, fromRow}]}` — `fromRow` is the board-space row the spawn animates from, SEGMENT-relative: `segmentTop - segmentRefillCount + i`, i.e. just above the spawn's own segment. Always `fromRow < to.r`; negative only when the segment starts at row 0 (lower segments below holes/locks yield `fromRow >= 0`).
 - `{type:'shuffle', cells:[{id, from:{r,c}, to:{r,c}}]}` — auto reshuffle when no moves.
 - `{type:'end', win, fail, score, movesLeft}` — always last.
 
@@ -72,7 +72,7 @@ Emitted in this order per resolution wave:
 - `wrap` fired normally = 3×3 blast.
 - Locked (caged) candies: cannot be swapped, do not fall (they anchor in place; gravity treats them as solid floor). Matching the caged candy's cell (it can still be part of a match) or hitting it with a special breaks the lock — candy stays, cage gone (`locksBroken`). Next wave it behaves normally.
 - Jelly: when a candy on a jelly cell is cleared (or lock broken on it — no, only cleared), jelly loses one layer → `jellyCleared` entry per layer removed.
-- Gravity: per column, split into segments by holes AND by locked cells; within each segment candies fall straight down; new candies spawn from the top of each segment (fromRow negative offsets). No diagonal filling in v1.
+- Gravity: per column, split into segments by holes AND by locked cells; within each segment candies fall straight down; new candies spawn from the top of each segment (`fromRow` is segment-relative — just above that segment's own top row, so it can be ≥ 0 for segments lower in the column). No diagonal filling in v1.
 - After every resolution (and at board creation), guarantee ≥1 valid move: reshuffle silently at creation, via `shuffle` step mid-game. Board creation must also avoid pre-existing matches. Max 20 shuffle attempts, then relax.
 - Scoring: each cleared candy = `60 × (1 + 0.5 × cascade)`; +100 bonus per special created; +30 per cell cleared by a firing special; round to int. `scoreDelta` per match step; `scoreTotal` running.
 - Collect goals count every cleared candy of that color (any cause).

@@ -25,16 +25,16 @@ export const LEVELS = [
   },
   {
     id: 3, name: 'Triple Sevens',
-    rows: 8, cols: 8, colors: 5, moves: 22,
-    goals: [{ type: 'score', target: 3400 }],
-    starScores: [3400, 5800, 8600],
+    rows: 8, cols: 8, colors: 4, moves: 22,
+    goals: [{ type: 'score', target: 3800 }],
+    starScores: [3800, 5800, 8600],
   },
 
   // --- Collect goals arrive (L4), first pulse at L5 ---
   {
     id: 4, name: 'Ruby Rush',
     rows: 8, cols: 8, colors: 4, moves: 20,
-    goals: [{ type: 'collect', color: 0, target: 20 }],
+    goals: [{ type: 'collect', color: 0, target: 32 }],
     starScores: [2600, 8000, 14000],
   },
   {
@@ -83,7 +83,7 @@ export const LEVELS = [
   // --- Shaped boards arrive (L8) ---
   {
     id: 8, name: 'The Donut',
-    rows: 8, cols: 8, colors: 5, moves: 20,
+    rows: 8, cols: 8, colors: 4, moves: 20,
     goals: [{ type: 'score', target: 5200 }],
     layout: [
       '........',
@@ -169,7 +169,7 @@ export const LEVELS = [
   },
   {
     id: 14, name: 'Vault Doors',
-    rows: 8, cols: 8, colors: 5, moves: 20,
+    rows: 8, cols: 8, colors: 5, moves: 22,
     goals: [
       { type: 'locks' },
       { type: 'score', target: 4000 },
@@ -290,8 +290,8 @@ export const LEVELS = [
     starScores: [6000, 18000, 42000],
   },
   {
-    id: 22, name: 'Diamond Vault',
-    rows: 9, cols: 9, colors: 6, moves: 22,
+    id: 22, name: 'Diamond Vault', // pre-finale breather: 5 colors keeps cascades alive
+    rows: 9, cols: 9, colors: 5, moves: 22,
     goals: [
       { type: 'locks' },
       { type: 'score', target: 5000 },

@@ -45,6 +45,8 @@ export class FX {
     this._free = [];
     for (let i = POOL_CAP - 1; i >= 0; i--) this._free.push(i);
     this._liveCount = 0;
+    this._idleCleared = false;   // canvas already blank — skip idle repaints
+    this._avgDt = 0.016;         // rolling frame-time avg → celebration budgets
 
     // Screen shake (trauma model: amplitude ∝ trauma², linear decay ≈ 400ms).
     this._trauma = 0;
@@ -66,6 +68,7 @@ export class FX {
     this.canvas.height = Math.max(1, Math.round(cssH * dpr));
     this.canvas.style.width = cssW + 'px';
     this.canvas.style.height = cssH + 'px';
+    this._idleCleared = false;
   }
 
   // ---------------------------------------------------------------- update
@@ -73,6 +76,7 @@ export class FX {
   update(dt) {
     const dts = FX._dts(dt);
     this._time += dts;
+    this._avgDt += (dts - this._avgDt) * 0.1;
 
     // Shake: trauma decays linearly over ~0.4s; offset is trauma² noise.
     if (this._trauma > 0) {
@@ -135,6 +139,13 @@ export class FX {
   // ---------------------------------------------------------------- render
 
   render() {
+    // Idle: nothing live — clear once, then skip repaints entirely.
+    if (this._liveCount === 0) {
+      if (this._idleCleared) return;
+      this._idleCleared = true;
+    } else {
+      this._idleCleared = false;
+    }
     const ctx = this.ctx;
     ctx.save();
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
@@ -385,7 +396,7 @@ export class FX {
   }
 
   _burst(x, y, color) {
-    const n = 28;
+    const n = this._avgDt > 0.025 ? 14 : 28; // halve on struggling devices
     this._spawn({ kind: 'glow', x, y, vx: 0, vy: 0, g: 0, drag: 1, life: 0.22, size: 26, color: '#ffffff', alpha: 0.95 });
     this._spawn({ kind: 'ring', x, y, life: 0.4, size: 8, size2: 78, lw: 4, color, alpha: 0.6 });
     for (let i = 0; i < n; i++) {
@@ -402,7 +413,7 @@ export class FX {
 
   /** Fluttering confetti rain across the whole canvas. */
   confettiWin() {
-    const n = 120;
+    const n = this._avgDt > 0.025 ? 60 : 120; // halve on struggling devices
     const colors = [...RAINBOW, PALETTE.gold[0], PALETTE.gold[0]];
     for (let i = 0; i < n; i++) {
       this._spawn({

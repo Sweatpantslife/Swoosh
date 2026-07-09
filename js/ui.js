@@ -18,6 +18,16 @@ function fmt(n) {
   return String(n);
 }
 
+// Human noun for a remaining goal, pluralised ("2 more rubies", "1 more jelly").
+const COLOR_NAMES = ['ruby', 'amber gem', 'emerald', 'sapphire', 'amethyst', 'pearl'];
+function goalNoun(g, n) {
+  if (g.type === 'jelly') return n === 1 ? 'jelly' : 'jellies';
+  if (g.type === 'locks') return n === 1 ? 'lock' : 'locks';
+  const base = COLOR_NAMES[g.color] || 'gem';
+  if (n === 1) return base;
+  return base === 'ruby' ? 'rubies' : base + 's';
+}
+
 function reducedMotion() {
   try {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -176,7 +186,15 @@ export class UI {
         : `Play level ${id}: ${def.name}${r ? `, ${r.stars} stars` : ''}`);
       if (locked) {
         node.disabled = true;
-        node.innerHTML = '<span class="lock-glyph" aria-hidden="true">\u{1F512}</span>';
+        const num = document.createElement('span');
+        num.className = 'locked-num';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(id);
+        const lock = document.createElement('span');
+        lock.className = 'lock-glyph';
+        lock.setAttribute('aria-hidden', 'true');
+        lock.textContent = '\u{1F512}';
+        node.append(num, lock);
       } else {
         node.textContent = String(id);
         const stars = document.createElement('span');
@@ -321,11 +339,47 @@ export class UI {
     }
   }
 
-  showFail({ levelId }) {
+  /**
+   * @param {object} p {levelId, goals} — goals (optional) from board.goals();
+   * when present the message reports what was actually left, so a near-miss
+   * reads as one ("only 2 more jellies!") instead of a generic quip.
+   */
+  showFail({ levelId, goals }) {
     this.hideModals();
     if (this.el.failText) {
-      this.el.failText.textContent =
-        `The house wins level ${levelId} this time… double down and try again?`;
+      let text = `The house wins level ${levelId} this time… double down and try again?`;
+      if (Array.isArray(goals) && goals.length) {
+        const parts = [];
+        let itemsLeft = 0;      // countable pieces (gems/jellies/locks) still needed
+        let scoreGoal = false;  // score targets aren't "items" for the near-miss rule
+        let totalTarget = 0;
+        let totalCurrent = 0;
+        for (const g of goals) {
+          const target = g.target | 0;
+          const current = Math.min(g.current | 0, target);
+          totalTarget += target;
+          totalCurrent += current;
+          const rem = target - current;
+          if (rem <= 0) continue;
+          if (g.type === 'score') {
+            scoreGoal = true;
+            parts.push(`${fmt(rem)} more points`);
+          } else {
+            itemsLeft += rem;
+            parts.push(`${rem} more ${goalNoun(g, rem)}`);
+          }
+        }
+        if (parts.length) {
+          const list = parts.join(', ');
+          const progress = totalTarget > 0 ? totalCurrent / totalTarget : 0;
+          if ((!scoreGoal && itemsLeft <= 3) || progress >= 0.9) {
+            text = `So close — only ${list} to go!`;
+          } else {
+            text = `${list} left — the house wins level ${levelId} this time… double down and try again?`;
+          }
+        }
+      }
+      this.el.failText.textContent = text;
     }
     this._showModal(this.el.modalFail);
   }
