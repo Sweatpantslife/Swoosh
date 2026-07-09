@@ -301,7 +301,8 @@ export class Board {
     // not a combo cell being consumed this wave.
     const canHost = ({ r, c }) => {
       const cell = this.cells[r][c];
-      return !cell.lock && !cell.special && !(avoidKeys && avoidKeys.has(K(r, c)));
+      // cell may be null (holes / already-cleared) — never host a special there.
+      return !!cell && !cell.lock && !cell.special && !(avoidKeys && avoidKeys.has(K(r, c)));
     };
 
     // Position: swapped cell if it participated (and can host), else center/intersection.

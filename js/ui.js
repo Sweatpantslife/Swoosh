@@ -400,6 +400,9 @@ export class UI {
   /** Rolling count-up for the win-modal score (instant under reduced motion). */
   _countUp(el, target) {
     if (!el) return;
+    // Cancel any in-flight count-up so concurrent calls never stack rAF loops
+    // fighting over the same element.
+    if (this._scoreRaf) { cancelAnimationFrame(this._scoreRaf); this._scoreRaf = 0; }
     if (reducedMotion() || target <= 0) {
       el.textContent = target.toLocaleString('en-US');
       return;

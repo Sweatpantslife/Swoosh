@@ -131,7 +131,9 @@ export class Renderer {
   pickCell(clientX, clientY) {
     // Arguments are canvas-relative CSS px per contract.
     const L = this.layout;
-    if (!L || !this.board) return null;
+    // L.cell can be 0 if the container was resized while hidden; the resulting
+    // NaN r/c would slip past the bounds check and crash on mask[r][c].
+    if (!L || L.cell <= 0 || !this.board) return null;
     const c = Math.floor((clientX - L.ox) / L.cell);
     const r = Math.floor((clientY - L.oy) / L.cell);
     if (r < 0 || c < 0 || r >= this.board.rows || c >= this.board.cols) return null;
@@ -150,6 +152,10 @@ export class Renderer {
    * exact right moments. hooks: {onMatchStep(step), onEnd(step)}.
    */
   async playSteps(steps, fx, audio, hooks = {}) {
+    // Unmount/zero-size guard: bail before touching layout-dependent step
+    // handlers. Early return from an async fn still resolves the promise, so
+    // main.js's await never hangs.
+    if (!this.layout || !this.board || !steps) return;
     this._fxRef = fx || this._fxRef;
     this.showHint(null);
     this.setSelected(null);
